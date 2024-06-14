@@ -1,6 +1,6 @@
 class Table1Model {
   String? columnBenjin;
-  String? columnYongJin;
+  String? columnYongJin;//赔率
   String? columnMean;
   String? columnRestartIndex;
   String? columnLiushuiIndex;

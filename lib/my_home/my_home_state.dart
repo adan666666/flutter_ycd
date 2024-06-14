@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -12,12 +11,13 @@ class MyState {
   static const OFFSET8431=8431;
   var isLoading = false;
   var lineColor = Colors.black87;
-  var randomV='';
+  var randomV='';//随机的出来的庄闲
+  var bettingMoney='';
   var bgColor = Colors.green;
   var textColor = Colors.white;
   static const RATE = 0.95;
   var totalValue = <String>[].obs;
-  List<SalesData> data = List.generate(150, (index) =>SalesData(index.toString(),Random().nextInt(1050).toDouble() )).toList();
+  List<SalesData> chartData/*图表数据*/ = List.generate(150, (index) =>SalesData(index.toString(),Random().nextInt(1050).toDouble() )).toList();
 
   var table1List=<Table1Model>[].obs;
   var table2List=<Table2Model>[].obs;

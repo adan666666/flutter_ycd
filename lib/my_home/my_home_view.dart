@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import '../my_db/Table1Model.dart';
-import '../my_db/Table2Model.dart';
+import 'package:ycd/utils/my_character.dart';
 import 'my_home_logic.dart';
 import 'my_home_state.dart';
 
@@ -56,7 +56,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       itemBuilder: (context, index) => Container(
                         alignment: Alignment.center,
                         color: controller.state.bgColor,
-                        child: Text(controller.state.totalValue[index], textAlign: TextAlign.start, style: TextStyle(color: controller.state.textColor)),
+                        child: ColoredBox(
+                            color: Colors.transparent,
+                            child: Text(controller.state.totalValue[index],
+                                textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: controller.state.textColor))),
                       ),
                     )),
               ),
@@ -75,7 +78,11 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   buildButton("庄输", 4),
                   divier(Colors.black, 38),
                   buildButton("上一步", 5),
-                  GestureDetector(onTap: () {}, child: SizedBox(width: 70, child: Image.asset('assets/images/restart2.png', width: 35, height: 35))),
+                  GestureDetector(
+                      onTap: () {
+                        Get.snackbar("", 'message');
+                      },
+                      child: SizedBox(width: 70, child: Image.asset('assets/images/restart2.png', width: 35, height: 35))),
                 ],
               ),
             ),
@@ -110,29 +117,118 @@ class MyHomePage extends GetView<MyHomeLogic> {
   }
 
   buildItem(int index) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(child: Text("index${index + 1}")),
-          Text("${index + 1}"),
-          Row(children: [Text("${index + 1}"), const SizedBox(width: 5), Image.asset('assets/images/delete.png')]),
-          Text("${index + 1}"),
-          SizedBox(
-            width: 70,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                divier(Colors.grey.withOpacity(0.5), 8),
-                const Text("1"),
-                const SizedBox(width: 5),
-                divier(Colors.grey.withOpacity(0.5), 8),
-                const SizedBox(width: 5),
-                const Text("1"),
-                divier(Colors.grey.withOpacity(0.5), 8),
-              ],
+          //序号
+          Text("${controller.state.table2List[index].table2Id}"),
+          //输赢
+          Container(
+            width: 80,
+            alignment: Alignment.centerRight,
+            child: Text(
+              controller.state.table2List[index].colmunShuyingzhi.toString(),
+              style: TextStyle(
+                color: controller.state.table2List[index].colmunShuyingzhi.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+              ),
             ),
           ),
+          //消数
+          Container(
+              width: 110,
+              color: Colors.transparent,
+              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Text(
+                  "${controller.state.table2List[index].colmunShuyingzhiD}",
+                  style: TextStyle(
+                    color: controller.state.table2List[index].colmunShuyingzhiD.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                GestureDetector(
+                    onTap: () {
+                      controller.updateSqlite(index);
+                    },
+                    child: Image.asset(height: 30, 'assets/images/delete.png'))
+              ])),
+          //下注值
+          Container(
+            width: 80,
+            alignment: Alignment.centerRight,
+            color: Colors.transparent,
+            child: Text("${controller.state.table2List[index].columnXiazhujine}"),
+          ),
+          //胜负路
+          SflContainer(index),
         ],
       );
+
+  Container SflContainer(int index) => controller.state.table2List[index].colmunShengfulu == '正打'
+      ? (controller.state.table2List[index].colmunRemark!.startsWith('-')
+          ? Container(
+              color: Colors.transparent,
+              width: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const Text("1", style: TextStyle(color: Colors.green)),
+                  const SizedBox(width: 5),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const SizedBox(width: 5),
+                  const Text("1", style: TextStyle(color: Colors.green)),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                ],
+              ),
+            )
+          : Container(
+              color: Colors.transparent,
+              width: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const Text("1", style: TextStyle(color: Colors.red)),
+                  const SizedBox(width: 5),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const SizedBox(width: 5),
+                  const Text("1", style: TextStyle(color: Colors.red)),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                ],
+              ),
+            ))
+      : controller.state.table2List[index].colmunRemark!.startsWith('-')
+          ? Container(
+              color: Colors.transparent,
+              width: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const Text("1", style: TextStyle(color: Colors.green)),
+                  const SizedBox(width: 5),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const SizedBox(width: 5),
+                  const Text("1", style: TextStyle(color: Colors.red)),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                ],
+              ),
+            )
+          : Container(
+              color: Colors.transparent,
+              width: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const Text("1", style: TextStyle(color: Colors.red)),
+                  const SizedBox(width: 5),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                  const SizedBox(width: 5),
+                  const Text("1", style: TextStyle(color: Colors.green)),
+                  divier(Colors.grey.withOpacity(0.5), 15),
+                ],
+              ),
+            );
 
   buildChats() {
     return Container(
@@ -224,7 +320,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //不传显示空心
                 color: Colors.transparent,
                 isVisible: true),
-            dataSource: controller.state.data,
+            dataSource: controller.state.chartData,
             xValueMapper: (SalesData sales, _) => sales.year,
             yValueMapper: (SalesData sales, _) => sales.sales,
             //line color
@@ -240,69 +336,47 @@ class MyHomePage extends GetView<MyHomeLogic> {
 
   Container divier(Color color, double height) => Container(height: height, width: 1, color: color);
 
-  buildButton(String str, int i) {
-    var bettingMoney = (controller.textEditingController.text);
-    return Expanded(
-      child: ElevatedButton(
-        style: ButtonStyle(
-          padding: MaterialStateProperty.all(EdgeInsetsGeometry.lerp(EdgeInsets.zero, EdgeInsets.zero, 0)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0), // 设置圆角大小
+  buildButton(String str, int i) => Expanded(
+        child: ElevatedButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all(EdgeInsetsGeometry.lerp(EdgeInsets.zero, EdgeInsets.zero, 0)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0), // 设置圆角大小
+              ),
             ),
           ),
-        ),
-        onPressed: () {
-          if (controller.state.randomV.isEmpty) {
-            Get.snackbar("温馨提示", '请摇塞子', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP);
-            return;
-          }
-          if (bettingMoney.toString().isEmpty) {
-            Get.snackbar("温馨提示", '请输入下注金额', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP);
-            return;
-          }
-          switch (i) {
-            case 1: //闲赢
-              if (controller.state.randomV == '庄') {
-                var c = (bettingMoney as double) * double.parse(controller.state.totalValue[27]);
-                controller.add(
-                  table2: Table2Model(
-                    colmunRemark: "-1",
-                    colmunShengfulu: "-1",
-                    colmunShuyingzhi: c.toString(),
-                    colmunShuyingzhiD: c.toString(),
-                    colmunZx: "1",
+          onPressed: () {
+            switch (i) {
+              case 1: //闲赢
+                controller.add(1, 'table2');
+                break;
+              case 2: //庄赢
+                controller.add(2, 'table2');
+                break;
+              case 3: //闲输
+                controller.add(3, 'table2');
+                break;
+              case 4: //庄输
+                controller.add(4, 'table2');
+                break;
+              case 5: //上一步
+                controller.deleteLast();
+                break;
+            }
+          },
+          child: controller.state.isLoading
+              ? const CupertinoActivityIndicator()
+              : Text(
+                  '$str',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    height: 0,
+                    fontSize: 10,
                   ),
-                );
-              } else if (controller.state.randomV == '闲') {
-                var c = bettingMoney;
-              }
-              break;
-            case 2: //庄赢
-              controller.add(
-                  table1: Table1Model(columnBenjin: "10000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "10"));
-              break;
-            case 3: //闲输
-              break;
-            case 4: //庄输
-              break;
-            default:
-              break;
-          }
-        },
-        child: controller.state.isLoading
-            ? const CupertinoActivityIndicator()
-            : Text(
-                '$str',
-                style: const TextStyle(
-                  color: Colors.black87,
-                  height: 0,
-                  fontSize: 10,
                 ),
-              ),
-      ),
-    );
-  }
+        ),
+      );
 }
 
 // Expanded(child: Container(height: double.infinity, color:controller.state.bgColor, child: Text(text, textAlign: TextAlign.center)));

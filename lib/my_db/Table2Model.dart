@@ -1,13 +1,15 @@
 class Table2Model {
-  int? columnXiazhujine;
-  String? colmunShuyingzhi;
-  String? colmunShuyingzhiD;
+  int table2Id=0;
+  String? columnXiazhujine; //下注金额
+  String? colmunShuyingzhi; //输赢值
+  String? colmunShuyingzhiD; //输赢值(消数列的)
   String? colmunShengfulu;
   String? colmunZx;
-  String? colmunRemark;
+  String? colmunRemark; //输赢标记
   String? columnCurrentJin;
 
   Table2Model({
+    required this.table2Id,
     this.columnXiazhujine,
     this.colmunShuyingzhi,
     this.colmunShuyingzhiD,
@@ -18,6 +20,7 @@ class Table2Model {
   });
 
   Table2Model.fromJson(Map<String, dynamic> json) {
+    table2Id = json['table2Id'];
     columnXiazhujine = json['column_xiazhujine'];
     colmunShuyingzhi = json['colmun_shuyingzhi'];
     colmunShuyingzhiD = json['colmun_shuyingzhi_d'];
@@ -29,6 +32,7 @@ class Table2Model {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['table2Id'] = this.table2Id;
     data['column_xiazhujine'] = this.columnXiazhujine;
     data['colmun_shuyingzhi'] = this.colmunShuyingzhi;
     data['colmun_shuyingzhi_d'] = this.colmunShuyingzhiD;
