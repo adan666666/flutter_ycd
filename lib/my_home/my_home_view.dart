@@ -35,10 +35,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             //图表区
-            Visibility(
-              visible: true,
-              child: buildChats(),
-            ),
+            buildChats(),
             //统计区
             ColoredBox(
               color: controller.state.lineColor,
@@ -80,7 +77,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   buildButton("上一步", 5),
                   GestureDetector(
                       onTap: () {
-                        Get.snackbar("", 'message');
+                        controller.reStart();
                       },
                       child: SizedBox(width: 70, child: Image.asset('assets/images/restart2.png', width: 35, height: 35))),
                 ],
@@ -120,7 +117,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //序号
-          Text("${controller.state.table2List[index].table2Id}"),
+          Text("${controller.state.table2List[index].table2Id + 1}"),
           //输赢
           Container(
             width: 80,
@@ -231,106 +228,110 @@ class MyHomePage extends GetView<MyHomeLogic> {
             );
 
   buildChats() {
-    return Container(
-      color: controller.state.bgColor,
-      height: 80,
-      child: SfCartesianChart(
-        borderWidth: 0,
-        borderColor: Colors.red,
-        margin: EdgeInsets.zero,
-        // plotAreaBackgroundColor: Colors.amber,//显示区颜色
-        // plotAreaBorderColor: Colors.red, x轴外边框颜色
-
-        // axes: const [
-        //   NumericAxis(
-        //     name: '你好',
-        //     opposedPosition: false, //右侧显示
-        //     title: AxisTitle(text: '金额（元）'),
-        //   )
-        // ],
-        primaryXAxis: const CategoryAxis(
-          majorTickLines: MajorTickLines(
-            size: 1,
-            color: Colors.amber,
-            width: 1,
-          ),
-          rangePadding: ChartRangePadding.auto,
-          //轴标题
-          // title: AxisTitle(text: '1111'),
-          //轴标题置顶
-          opposedPosition: false,
-          //是否显示标题
-          isVisible: false,
-          labelRotation: -45,
-          edgeLabelPlacement: EdgeLabelPlacement.none,
-          // maximum: 10,
-          // minimum: 0,
-          //x轴在外 或则内部
-          labelPosition: ChartDataLabelPosition.inside,
-          //x轴文案边框颜色
-          borderColor: Colors.red,
-          //x轴文案边框宽度
-          borderWidth: 1,
-          //x轴文案边框样式，分为所有边框和去掉了上下边框
-          axisBorderType: AxisBorderType.withoutTopAndBottom,
-          arrangeByIndex: false,
-          labelPlacement: LabelPlacement.betweenTicks,
-          // interactiveTooltip: InteractiveTooltip(
-          //   borderRadius: 10,
-          //   borderColor: Colors.blue,
-          //   borderWidth: 10,
-          // ),
-        ),
-        //y轴线，显示
-        primaryYAxis: const NumericAxis(
+    return Obx(() =>
+    controller.state.chartData.isNotEmpty?
+      SizedBox(
+        height: 70,
+        child: SfCartesianChart(
+          backgroundColor: controller.state.bgColor,
           borderWidth: 0,
-          rangePadding: ChartRangePadding.round,
-          majorGridLines: MajorGridLines(
-            width: 1,
-            color: Colors.redAccent,
-            dashArray: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-          ),
-          //轴标题
-          // title: AxisTitle(text: '1111'),
-          //轴标题置顶
-          opposedPosition: true,
-          //是否显示标题
-          isVisible: true,
-          labelRotation: 0,
-        ),
+          borderColor: Colors.red,
+          margin: EdgeInsets.zero,
+          // plotAreaBackgroundColor: Colors.amber,//显示区颜色
+          // plotAreaBorderColor: Colors.red, x轴外边框颜色
 
-        // 图表标题
-        // title: const ChartTitle(text: 'Half yearly sales analysis'),
-        // Enable legend
-        legend: const Legend(isVisible: false),
-        // Enable tooltip 点了鼠标提示框
-        tooltipBehavior: TooltipBehavior(enable: false),
-        //系列；串联；连续
-        series: <CartesianSeries<SalesData, String>>[
-          LineSeries<SalesData, String>(
-            width: 1.1,
-            //线条宽度
-            enableTooltip: true,
-            //圆点的外边框颜色
-            pointColorMapper: (datum, index) => Colors.redAccent,
-            //修饰数据点（显示圆圈）
-            markerSettings: const MarkerSettings(
-                height: 5,
-                width: 5,
-                //不传显示空心
-                color: Colors.transparent,
-                isVisible: true),
-            dataSource: controller.state.chartData,
-            xValueMapper: (SalesData sales, _) => sales.year,
-            yValueMapper: (SalesData sales, _) => sales.sales,
-            //line color
-            color: Colors.white,
-            name: '卖',
-            //具体的数字显示
-            dataLabelSettings: const DataLabelSettings(isVisible: false),
-          )
-        ],
-      ),
+          // axes: const [
+          //   NumericAxis(
+          //     name: '你好',
+          //     opposedPosition: false, //右侧显示
+          //     title: AxisTitle(text: '金额（元）'),
+          //   )
+          // ],
+          primaryXAxis: const CategoryAxis(
+            majorTickLines: MajorTickLines(
+              size: 1,
+              color: Colors.amber,
+              width: 1,
+            ),
+            rangePadding: ChartRangePadding.auto,
+            //轴标题
+            // title: AxisTitle(text: '1111'),
+            //轴标题置顶
+            opposedPosition: false,
+            //是否显示标题
+            isVisible: false,
+            labelRotation: -45,
+            edgeLabelPlacement: EdgeLabelPlacement.none,
+            // maximum: 10,
+            // minimum: 0,
+            //x轴在外 或则内部
+            labelPosition: ChartDataLabelPosition.inside,
+            //x轴文案边框颜色
+            borderColor: Colors.red,
+            //x轴文案边框宽度
+            borderWidth: 1,
+            //x轴文案边框样式，分为所有边框和去掉了上下边框
+            axisBorderType: AxisBorderType.withoutTopAndBottom,
+            arrangeByIndex: false,
+            labelPlacement: LabelPlacement.betweenTicks,
+            // interactiveTooltip: InteractiveTooltip(
+            //   borderRadius: 10,
+            //   borderColor: Colors.blue,
+            //   borderWidth: 10,
+            // ),
+          ),
+          //y轴线，显示
+          primaryYAxis: const NumericAxis(
+            borderWidth: 0,
+            rangePadding: ChartRangePadding.round,
+            majorGridLines: MajorGridLines(
+              width: 1,
+              color: Colors.redAccent,
+              dashArray: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            ),
+            //轴标题
+            // title: AxisTitle(text: '1111'),
+            //轴标题置顶
+            opposedPosition: true,
+            //是否显示标题
+            isVisible: true,
+            labelRotation: 0,
+          ),
+
+          // 图表标题
+          // title: const ChartTitle(text: 'Half yearly sales analysis'),
+          // Enable legend
+          legend: const Legend(isVisible: false),
+          // Enable tooltip 点了鼠标提示框
+          tooltipBehavior: TooltipBehavior(enable: false),
+          //系列；串联；连续
+          series: <CartesianSeries<SalesData, String>>[
+            LineSeries<SalesData, String>(
+              width: 1.1,
+              //线条宽度
+              enableTooltip: true,
+              //圆点的外边框颜色
+              pointColorMapper: (datum, index) => Colors.redAccent,
+              //修饰数据点（显示圆圈）
+              markerSettings: const MarkerSettings(
+                  height: 5,
+                  width: 5,
+                  //不传显示空心
+                  color: Colors.transparent,
+                  isVisible: true),
+              dataSource: controller.state.chartData.value,
+              xValueMapper: (SalesData sales, _) => "${sales.year}",
+              yValueMapper: (SalesData sales, _) => sales.sales,
+              //line color
+              color: Colors.white,
+              name: '卖',
+              //具体的数字显示
+              dataLabelSettings: const DataLabelSettings(isVisible: false),
+            )
+          ],
+        ),
+      ):
+      Text('data'),
     );
   }
 
