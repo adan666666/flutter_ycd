@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:ycd/utils/my_character.dart';
 import 'my_home_logic.dart';
 import 'my_home_state.dart';
 
@@ -25,10 +23,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
           elevation: 0,
           toolbarHeight: 23,
           centerTitle: false,
-          backgroundColor: controller.state.bgColor,
+          backgroundColor: controller.state.chartBgColor,
           title: Text(
             title,
-            style: const TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12, color: Colors.white),
           )),
       body: SafeArea(
         child: Column(
@@ -36,7 +34,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
           children: <Widget>[
             //图表区
             buildChats(),
-            //统计区
+            //列表区
             ColoredBox(
               color: controller.state.lineColor,
               child: SizedBox(
@@ -56,7 +54,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                         child: ColoredBox(
                             color: Colors.transparent,
                             child: Text(controller.state.totalValue[index],
-                                textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w100, color: controller.state.textColor))),
+                                textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
                       ),
                     )),
               ),
@@ -66,15 +64,21 @@ class MyHomePage extends GetView<MyHomeLogic> {
               height: 40,
               child: Row(
                 children: [
-                  buildButton("闲赢", 1),
-                  divier(Colors.black, 38),
-                  buildButton("庄赢", 2),
-                  divier(Colors.black, 38),
-                  buildButton("闲输", 3),
-                  divier(Colors.black, 38),
-                  buildButton("庄输", 4),
-                  divier(Colors.black, 38),
-                  buildButton("上一步", 5),
+                  divier2(Colors.black, 38),
+                  buildButton("P", 1),
+                  divier2(Colors.black, 38),
+                  buildButton("B", 2),
+                  divier2(Colors.black, 38),
+                  buildButton("P", 3),
+                  divier2(Colors.black, 38),
+                  buildButton("B", 4),
+                  divier2(Colors.black, 38),
+                  GestureDetector(
+                      onTap: () {
+                        controller.deleteLast();
+                      },
+                      child: SizedBox(width: 70, child: Image.asset('assets/images/delete.png', width: 35, height: 35))),
+                  Container(height: 25, width: 0.5, color: Colors.black),
                   GestureDetector(
                       onTap: () {
                         controller.reStart();
@@ -86,7 +90,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
             //列表
             Expanded(
               child: Obx(() => ColoredBox(
-                    color: const Color(0xFFE9EEDB),
+                    color: controller.state.listViewColor,
                     child: ListView.separated(
                       padding: EdgeInsets.zero,
                       controller: controller.scrollController,
@@ -97,14 +101,18 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   )),
             ),
             //输入金额
-            TextField(
-              controller: controller.textEditingController,
-              onChanged: (value) {},
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.zero,
-                border: OutlineInputBorder(borderSide: BorderSide.none),
-                hintText: "请输入下注金额",
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: controller.textEditingController,
+                onChanged: (value) {},
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(left: 20),
+                  border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
+                  hintText: "请输入下注金额",
+                ),
               ),
             )
           ],
@@ -228,125 +236,120 @@ class MyHomePage extends GetView<MyHomeLogic> {
             );
 
   buildChats() {
-    return Obx(() =>
-    controller.state.chartData.isNotEmpty?
-      SizedBox(
-        height: 70,
-        child: SfCartesianChart(
-          backgroundColor: controller.state.bgColor,
-          borderWidth: 0,
-          borderColor: Colors.red,
-          margin: EdgeInsets.zero,
-          // plotAreaBackgroundColor: Colors.amber,//显示区颜色
-          // plotAreaBorderColor: Colors.red, x轴外边框颜色
+    return Obx(
+      () => controller.state.chartData.isNotEmpty
+          ? SizedBox(
+              height: 70,
+              child: SfCartesianChart(
+                backgroundColor: controller.state.chartBgColor,
+                borderWidth: 0,
+                borderColor: Colors.red,
+                margin: EdgeInsets.zero,
+                // plotAreaBackgroundColor: Colors.amber,//显示区颜色
+                // plotAreaBorderColor: Colors.red, x轴外边框颜色
 
-          // axes: const [
-          //   NumericAxis(
-          //     name: '你好',
-          //     opposedPosition: false, //右侧显示
-          //     title: AxisTitle(text: '金额（元）'),
-          //   )
-          // ],
-          primaryXAxis: const CategoryAxis(
-            majorTickLines: MajorTickLines(
-              size: 1,
-              color: Colors.amber,
-              width: 1,
-            ),
-            rangePadding: ChartRangePadding.auto,
-            //轴标题
-            // title: AxisTitle(text: '1111'),
-            //轴标题置顶
-            opposedPosition: false,
-            //是否显示标题
-            isVisible: false,
-            labelRotation: -45,
-            edgeLabelPlacement: EdgeLabelPlacement.none,
-            // maximum: 10,
-            // minimum: 0,
-            //x轴在外 或则内部
-            labelPosition: ChartDataLabelPosition.inside,
-            //x轴文案边框颜色
-            borderColor: Colors.red,
-            //x轴文案边框宽度
-            borderWidth: 1,
-            //x轴文案边框样式，分为所有边框和去掉了上下边框
-            axisBorderType: AxisBorderType.withoutTopAndBottom,
-            arrangeByIndex: false,
-            labelPlacement: LabelPlacement.betweenTicks,
-            // interactiveTooltip: InteractiveTooltip(
-            //   borderRadius: 10,
-            //   borderColor: Colors.blue,
-            //   borderWidth: 10,
-            // ),
-          ),
-          //y轴线，显示
-          primaryYAxis: const NumericAxis(
-            borderWidth: 0,
-            rangePadding: ChartRangePadding.round,
-            majorGridLines: MajorGridLines(
-              width: 1,
-              color: Colors.redAccent,
-              dashArray: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-            ),
-            //轴标题
-            // title: AxisTitle(text: '1111'),
-            //轴标题置顶
-            opposedPosition: true,
-            //是否显示标题
-            isVisible: true,
-            labelRotation: 0,
-          ),
+                // axes: const [
+                //   NumericAxis(
+                //     name: '你好',
+                //     opposedPosition: false, //右侧显示
+                //     title: AxisTitle(text: '金额（元）'),
+                //   )
+                // ],
+                primaryXAxis: const CategoryAxis(
+                  majorTickLines: MajorTickLines(
+                    size: 1,
+                    color: Colors.amber,
+                    width: 1,
+                  ),
+                  rangePadding: ChartRangePadding.auto,
+                  //轴标题
+                  // title: AxisTitle(text: '1111'),
+                  //轴标题置顶
+                  opposedPosition: false,
+                  //是否显示标题
+                  isVisible: false,
+                  labelRotation: -45,
+                  edgeLabelPlacement: EdgeLabelPlacement.none,
+                  // maximum: 10,
+                  // minimum: 0,
+                  //x轴在外 或则内部
+                  labelPosition: ChartDataLabelPosition.inside,
+                  //x轴文案边框颜色
+                  borderColor: Colors.red,
+                  //x轴文案边框宽度
+                  borderWidth: 1,
+                  //x轴文案边框样式，分为所有边框和去掉了上下边框
+                  axisBorderType: AxisBorderType.withoutTopAndBottom,
+                  arrangeByIndex: false,
+                  labelPlacement: LabelPlacement.betweenTicks,
+                  // interactiveTooltip: InteractiveTooltip(
+                  //   borderRadius: 10,
+                  //   borderColor: Colors.blue,
+                  //   borderWidth: 10,
+                  // ),
+                ),
+                //y轴线，显示
+                primaryYAxis: const NumericAxis(
+                  borderWidth: 0,
+                  rangePadding: ChartRangePadding.round,
+                  majorGridLines: MajorGridLines(
+                    width: 1,
+                    color: Colors.redAccent,
+                    dashArray: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+                  ),
+                  //轴标题
+                  // title: AxisTitle(text: '1111'),
+                  //轴标题置顶
+                  opposedPosition: true,
+                  //是否显示标题
+                  isVisible: true,
+                  labelRotation: 0,
+                ),
 
-          // 图表标题
-          // title: const ChartTitle(text: 'Half yearly sales analysis'),
-          // Enable legend
-          legend: const Legend(isVisible: false),
-          // Enable tooltip 点了鼠标提示框
-          tooltipBehavior: TooltipBehavior(enable: false),
-          //系列；串联；连续
-          series: <CartesianSeries<SalesData, String>>[
-            LineSeries<SalesData, String>(
-              width: 1.1,
-              //线条宽度
-              enableTooltip: true,
-              //圆点的外边框颜色
-              pointColorMapper: (datum, index) => Colors.redAccent,
-              //修饰数据点（显示圆圈）
-              markerSettings: const MarkerSettings(
-                  height: 5,
-                  width: 5,
-                  //不传显示空心
-                  color: Colors.transparent,
-                  isVisible: true),
-              dataSource: controller.state.chartData.value,
-              xValueMapper: (SalesData sales, _) => "${sales.year}",
-              yValueMapper: (SalesData sales, _) => sales.sales,
-              //line color
-              color: Colors.white,
-              name: '卖',
-              //具体的数字显示
-              dataLabelSettings: const DataLabelSettings(isVisible: false),
+                // 图表标题
+                // title: const ChartTitle(text: 'Half yearly sales analysis'),
+                // Enable legend
+                legend: const Legend(isVisible: false),
+                // Enable tooltip 点了鼠标提示框
+                tooltipBehavior: TooltipBehavior(enable: false),
+                //系列；串联；连续
+                series: <CartesianSeries<SalesData, String>>[
+                  LineSeries<SalesData, String>(
+                    width: 1.1,
+                    //线条宽度
+                    enableTooltip: true,
+                    //圆点的外边框颜色
+                    pointColorMapper: (datum, index) => Colors.redAccent,
+                    //修饰数据点（显示圆圈）
+                    markerSettings: const MarkerSettings(
+                        height: 5,
+                        width: 5,
+                        //不传显示空心
+                        color: Colors.transparent,
+                        isVisible: true),
+                    dataSource: controller.state.chartData.value,
+                    xValueMapper: (SalesData sales, _) => "${sales.year}",
+                    yValueMapper: (SalesData sales, _) => sales.sales,
+                    //line color
+                    color: Colors.white,
+                    name: '卖',
+                    //具体的数字显示
+                    dataLabelSettings: const DataLabelSettings(isVisible: false),
+                  )
+                ],
+              ),
             )
-          ],
-        ),
-      ):
-      Text('data'),
+          : Text('data'),
     );
   }
 
-  Container divier(Color color, double height) => Container(height: height, width: 1, color: color);
+  Container divier(Color color, double height) => Container(height: height, width: 1, color: Colors.transparent);
+
+  Container divier2(Color color, double height) => Container(height: height, width: 5, color: Colors.transparent);
 
   buildButton(String str, int i) => Expanded(
-        child: ElevatedButton(
-          style: ButtonStyle(
-            padding: MaterialStateProperty.all(EdgeInsetsGeometry.lerp(EdgeInsets.zero, EdgeInsets.zero, 0)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0), // 设置圆角大小
-              ),
-            ),
-          ),
+        child: TextButton(
+          style: buildButtonStyle(),
           onPressed: () {
             switch (i) {
               case 1: //闲赢
@@ -361,9 +364,6 @@ class MyHomePage extends GetView<MyHomeLogic> {
               case 4: //庄输
                 controller.add(4, 'table2');
                 break;
-              case 5: //上一步
-                controller.deleteLast();
-                break;
             }
           },
           child: controller.state.isLoading
@@ -371,11 +371,23 @@ class MyHomePage extends GetView<MyHomeLogic> {
               : Text(
                   '$str',
                   style: const TextStyle(
-                    color: Colors.black87,
+                    color: Colors.black38,
+                    fontWeight: FontWeight.bold,
                     height: 0,
-                    fontSize: 10,
+                    fontSize: 18,
                   ),
                 ),
+        ),
+      );
+
+  buildButtonStyle() => ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.grey.shade100),
+        overlayColor: MaterialStateProperty.all(Colors.red.shade100),
+        padding: MaterialStateProperty.all(EdgeInsetsGeometry.lerp(EdgeInsets.zero, EdgeInsets.zero, 0)),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0), // 设置圆角大小
+          ),
         ),
       );
 }

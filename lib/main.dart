@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primaryColor: Colors.green,
         useMaterial3: true,
       ),
       initialRoute: AppPages.home,
@@ -28,12 +28,5 @@ class MyApp extends StatelessWidget {
 
 class AppPages {
   static const String home = '/home';
-  static final pages = [
-    GetPage(
-        name: home,
-        page: () => const MyHomePage(
-              title: '记牌器 v1.0'
-            ),
-        binding: MyHomeBinding())
-  ];
+  static final pages = [GetPage(name: home, page: () => const MyHomePage(title: '记牌器 v1.0'), binding: MyHomeBinding())];
 }

@@ -23,12 +23,7 @@ class MyHomeLogic extends GetxController {
     _instance = DbHelper.instance.getDb();
 
     List.generate(32, (index) => state.totalValue.add('$index'));
-    state.chartData.value = List.generate(70, (index) => SalesData(index, Random().nextInt(1).toDouble())).toList();
-    //初始化值
-    /*  _instance
-        ?.then((value) => value.insert(DbHelper.table1,
-            Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "10").toJson()))
-        .then((value) => queryAll());*/
+    state.chartData.value = List.generate(50, (index) => SalesData(index, Random().nextInt(1).toDouble())).toList();
     queryAll();
     textEditingController.addListener(() => state.bettingMoney = textEditingController.text);
   }
@@ -40,6 +35,9 @@ class MyHomeLogic extends GetxController {
   }
 
   setRandom(Function(int) f) {
+    state.js2 = state.js2 + 1;
+    print(state.js2);
+    state.totalValue[28] = "${state.js1}/${state.js2}";
     if (next(1, 90485) > 44625 - MyState.OFFSET8431) {
       state.totalValue[30] = '庄';
       state.randomV = '庄';
@@ -74,7 +72,8 @@ class MyHomeLogic extends GetxController {
       Get.snackbar("温馨提示", '请输入下注金额', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP);
       return;
     }
-
+    state.js1 = state.js1 + 1;
+    state.totalValue[28] = "${state.js1}/${state.js2}";
     final table = tableName == 'table2'
         ? Table2Model(
             table2Id: state.table2List.length,
@@ -110,8 +109,7 @@ class MyHomeLogic extends GetxController {
     });
   }
 
-  void statisticalArea() {
-    //图表区
+  getCharts() {
     double current = 0 /* double.parse(state.totalValue[0])*/;
     var listZiJi = <double>[];
     var c = 0;
@@ -131,10 +129,16 @@ class MyHomeLogic extends GetxController {
     }
     var removeLast = state.chartData.removeLast();
     Future.delayed(const Duration(milliseconds: 300), () => state.chartData.add(removeLast));
+  }
 
+  void statisticalArea() {
     state.totalValue[0] = '${state.table1List.last.columnBenjin}'; //本金
     state.totalValue[19] = '${state.table1List.last.columnMean}'; //期望值
     state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
+    state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
+
+    //图表区
+    getCharts();
 
     //统计区，计算
     state.totalValue[1] = '${state.table2List.length}'; //一共打多少手
@@ -142,8 +146,10 @@ class MyHomeLogic extends GetxController {
     var zt_y = 0;
     var zt_s = 0;
     var zt_syz = 0.0;
+    var runningWater = 0.0;
     for (var element in state.table2List) {
       zt_syz += double.parse(element.colmunShuyingzhi.toString());
+      runningWater += double.parse(element.columnXiazhujine.toString());
       if (element.colmunRemark!.startsWith("-1")) {
         zt_s--;
       } else {
@@ -156,10 +162,9 @@ class MyHomeLogic extends GetxController {
     state.totalValue[17] = '${zt_syz}'; //一共输赢多少钱
     state.totalValue[21] = '${zt_syz / double.parse(removeChineseCharacters(state.totalValue[13]))}'; //平均输赢多少钱
     var d = (double.parse(state.totalValue[1]) + 1) * double.parse(state.totalValue[19]); //期望一共的值
-    state.totalValue[25] = zt_syz < 0
-        ? '须${((zt_syz.abs() + d) / double.parse(state.totalValue[13])).toStringAsFixed(1)}x${state.totalValue[13]}'
-        : '可负${((zt_syz.abs() - d) / double.parse(state.totalValue[13])).toStringAsFixed(1)}x${state.totalValue[13]}'; //还需，可负
-    state.totalValue[29] = '${0}'; //流水索引
+    var parse = int.parse(state.totalValue[13]).abs();
+    state.totalValue[25] =
+        zt_syz < 0 ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x${parse}' : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x${parse}'; //还需，可负
 
     state.totalValue[4] = "${double.parse(state.totalValue[4]) - zt_syz}"; //当前金额
 
@@ -187,9 +192,13 @@ class MyHomeLogic extends GetxController {
     state.totalValue[18] = '$jb_syz'; //一共输赢多少钱
     state.totalValue[22] = '${jb_syz / double.parse(removeChineseCharacters(state.totalValue[14]))}'; //平均输赢多少钱
     var dJ = (jb_count + 1) * double.parse(state.totalValue[19]); //期望一共的值
-    state.totalValue[26] = jb_syz < 0
-        ? '须${((jb_syz.abs() + dJ) / double.parse(state.totalValue[14])).toStringAsFixed(1)}x${state.totalValue[14]}'
-        : '可负${((jb_syz.abs() - dJ) / double.parse(state.totalValue[14])).toStringAsFixed(1)}x${state.totalValue[14]}'; //还需，可负
+    parse = int.parse(state.totalValue[14]).abs();
+    state.totalValue[26] =
+        jb_syz < 0 ? '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x${parse}' : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x${parse}'; //还需，可负
+
+    ///第四列
+    state.totalValue[3] = '流水$runningWater';
+    state.totalValue[7] = '均利${zt_syz / state.table2List.length}';
   }
 
   getCurrentJin(int i, double parse) {
