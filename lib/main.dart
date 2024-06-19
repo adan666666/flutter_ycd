@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:ycd/my_home/my_home_binding.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppPages.home,
       getPages: AppPages.pages,
+      builder: EasyLoading.init(),
     );
   }
 }

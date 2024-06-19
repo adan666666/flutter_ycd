@@ -20,8 +20,20 @@ class MyHomePage extends GetView<MyHomeLogic> {
         child: Image.asset('assets/images/shai.png'),
       ),
       appBar: AppBar(
+          actions: [
+            GestureDetector(
+                onTap: () => controller.showFunctionTypesAlert(),
+                child: const Icon(
+                  Icons.edit,
+                  size: 20,
+                  color: Colors.white,
+                )),
+            const SizedBox(
+              width: 10,
+            )
+          ],
           elevation: 0,
-          toolbarHeight: 23,
+          toolbarHeight: 28,
           centerTitle: false,
           backgroundColor: controller.state.chartBgColor,
           title: Text(
@@ -61,29 +73,24 @@ class MyHomePage extends GetView<MyHomeLogic> {
             ),
             //按钮功能区
             SizedBox(
-              height: 40,
+              height: 35,
               child: Row(
                 children: [
                   divier2(Colors.black, 38),
-                  buildButton("P", 1),
+                  buildButton(Colors.red, "P", 1),
                   divier2(Colors.black, 38),
-                  buildButton("B", 2),
+                  buildButton(Colors.red, "B", 2),
                   divier2(Colors.black, 38),
-                  buildButton("P", 3),
+                  buildButton(Colors.green, "P", 3),
                   divier2(Colors.black, 38),
-                  buildButton("B", 4),
+                  buildButton(Colors.green, "B", 4),
                   divier2(Colors.black, 38),
                   GestureDetector(
                       onTap: () {
                         controller.deleteLast();
                       },
-                      child: SizedBox(width: 70, child: Image.asset('assets/images/delete.png', width: 35, height: 35))),
+                      child: SizedBox(width: 65, child: Image.asset('assets/images/delete.png', width: 35, height: 35))),
                   Container(height: 25, width: 0.5, color: Colors.black),
-                  GestureDetector(
-                      onTap: () {
-                        controller.reStart();
-                      },
-                      child: SizedBox(width: 70, child: Image.asset('assets/images/restart2.png', width: 35, height: 35))),
                 ],
               ),
             ),
@@ -92,11 +99,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
               child: Obx(() => ColoredBox(
                     color: controller.state.listViewColor,
                     child: ListView.separated(
-                      padding: EdgeInsets.zero,
                       controller: controller.scrollController,
                       itemCount: controller.state.table2List.length,
                       itemBuilder: (BuildContext context, int index) => buildItem(index),
-                      separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.black26),
+                      separatorBuilder: (BuildContext context, int index) => Divider(height: 2, indent: 5, thickness: 0.5, color: Colors.blue[index % 9 * 100]),
                     ),
                   )),
             ),
@@ -112,6 +118,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
                   hintText: "请输入下注金额",
+                  hintStyle: TextStyle(fontSize: 12),
                 ),
               ),
             )
@@ -121,50 +128,52 @@ class MyHomePage extends GetView<MyHomeLogic> {
     );
   }
 
-  buildItem(int index) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          //序号
-          Text("${controller.state.table2List[index].table2Id + 1}"),
-          //输赢
-          Container(
-            width: 80,
-            alignment: Alignment.centerRight,
-            child: Text(
-              controller.state.table2List[index].colmunShuyingzhi.toString(),
-              style: TextStyle(
-                color: controller.state.table2List[index].colmunShuyingzhi.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+  buildItem(int index) => SizedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            //序号
+            Text("${controller.state.table2List[index].table2Id + 1}"),
+            //输赢
+            Container(
+              width: 80,
+              alignment: Alignment.centerRight,
+              child: Text(
+                controller.state.table2List[index].colmunShuyingzhi.toString(),
+                style: TextStyle(
+                  color: controller.state.table2List[index].colmunShuyingzhi.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+                ),
               ),
             ),
-          ),
-          //消数
-          Container(
-              width: 110,
-              color: Colors.transparent,
-              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                Text(
-                  "${controller.state.table2List[index].colmunShuyingzhiD}",
-                  style: TextStyle(
-                    color: controller.state.table2List[index].colmunShuyingzhiD.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+            //消数
+            Container(
+                width: 110,
+                color: Colors.transparent,
+                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Text(
+                    "${controller.state.table2List[index].colmunShuyingzhiD}",
+                    style: TextStyle(
+                      color: controller.state.table2List[index].colmunShuyingzhiD.toString().startsWith('-') ? Colors.green : Colors.redAccent,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 5),
-                GestureDetector(
-                    onTap: () {
-                      controller.updateSqlite(index);
-                    },
-                    child: Image.asset(height: 30, 'assets/images/delete.png'))
-              ])),
-          //下注值
-          Container(
-            width: 80,
-            alignment: Alignment.centerRight,
-            color: Colors.transparent,
-            child: Text("${controller.state.table2List[index].columnXiazhujine}"),
-          ),
-          //胜负路
-          SflContainer(index),
-        ],
+                  const SizedBox(width: 5),
+                  GestureDetector(
+                      onTap: () {
+                        controller.updateSqlite(index);
+                      },
+                      child: Image.asset(height: 30, 'assets/images/delete.png'))
+                ])),
+            //下注值
+            Container(
+              width: 80,
+              alignment: Alignment.centerRight,
+              color: Colors.transparent,
+              child: Text("${controller.state.table2List[index].columnXiazhujine}"),
+            ),
+            //胜负路
+            SflContainer(index),
+          ],
+        ),
       );
 
   Container SflContainer(int index) => controller.state.table2List[index].colmunShengfulu == '正打'
@@ -243,7 +252,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
               child: SfCartesianChart(
                 backgroundColor: controller.state.chartBgColor,
                 borderWidth: 0,
-                borderColor: Colors.red,
+                // borderColor: Colors.red,
                 margin: EdgeInsets.zero,
                 // plotAreaBackgroundColor: Colors.amber,//显示区颜色
                 // plotAreaBorderColor: Colors.red, x轴外边框颜色
@@ -258,7 +267,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 primaryXAxis: const CategoryAxis(
                   majorTickLines: MajorTickLines(
                     size: 1,
-                    color: Colors.amber,
+                    color: Colors.green,
                     width: 1,
                   ),
                   rangePadding: ChartRangePadding.auto,
@@ -294,8 +303,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   rangePadding: ChartRangePadding.round,
                   majorGridLines: MajorGridLines(
                     width: 1,
-                    color: Colors.redAccent,
-                    dashArray: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+                    color: Colors.green,
+                    dashArray: [1],
                   ),
                   //轴标题
                   // title: AxisTitle(text: '1111'),
@@ -315,19 +324,25 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //系列；串联；连续
                 series: <CartesianSeries<SalesData, String>>[
                   LineSeries<SalesData, String>(
-                    width: 1.1,
+                    width: 1.0,
                     //线条宽度
                     enableTooltip: true,
                     //圆点的外边框颜色
-                    pointColorMapper: (datum, index) => Colors.redAccent,
+                    pointColorMapper: (datum, index) => index % 3 == 0
+                        ? index % 2 == 0
+                            ? Colors.blue
+                            : Colors.green
+                        : index % 2 == 0
+                            ? Colors.red
+                            : Colors.purple,
                     //修饰数据点（显示圆圈）
                     markerSettings: const MarkerSettings(
-                        height: 5,
-                        width: 5,
+                        height: 3,
+                        width: 3,
                         //不传显示空心
-                        color: Colors.transparent,
+                        color: Colors.green,
                         isVisible: true),
-                    dataSource: controller.state.chartData.value,
+                    dataSource: controller.state.chartData,
                     xValueMapper: (SalesData sales, _) => "${sales.year}",
                     yValueMapper: (SalesData sales, _) => sales.sales,
                     //line color
@@ -339,7 +354,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 ],
               ),
             )
-          : Text('data'),
+          : const Text('data'),
     );
   }
 
@@ -347,41 +362,44 @@ class MyHomePage extends GetView<MyHomeLogic> {
 
   Container divier2(Color color, double height) => Container(height: height, width: 5, color: Colors.transparent);
 
-  buildButton(String str, int i) => Expanded(
-        child: TextButton(
-          style: buildButtonStyle(),
-          onPressed: () {
-            switch (i) {
-              case 1: //闲赢
-                controller.add(1, 'table2');
-                break;
-              case 2: //庄赢
-                controller.add(2, 'table2');
-                break;
-              case 3: //闲输
-                controller.add(3, 'table2');
-                break;
-              case 4: //庄输
-                controller.add(4, 'table2');
-                break;
-            }
-          },
-          child: controller.state.isLoading
-              ? const CupertinoActivityIndicator()
-              : Text(
-                  '$str',
-                  style: const TextStyle(
-                    color: Colors.black38,
-                    fontWeight: FontWeight.bold,
-                    height: 0,
-                    fontSize: 18,
+  buildButton(Color bg, String str, int i) => Expanded(
+        child: Container(
+          height: 32,
+          child: TextButton(
+            style: buildButtonStyle(bg),
+            onPressed: () {
+              switch (i) {
+                case 1: //闲赢
+                  controller.add(1, 'table2');
+                  break;
+                case 2: //庄赢
+                  controller.add(2, 'table2');
+                  break;
+                case 3: //闲输
+                  controller.add(3, 'table2');
+                  break;
+                case 4: //庄输
+                  controller.add(4, 'table2');
+                  break;
+              }
+            },
+            child: controller.state.isLoading
+                ? const CupertinoActivityIndicator()
+                : Text(
+                    '$str',
+                    style: const TextStyle(
+                      color: Colors.black38,
+                      fontWeight: FontWeight.bold,
+                      height: 0,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
+          ),
         ),
       );
 
-  buildButtonStyle() => ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.grey.shade100),
+  buildButtonStyle(Color bg) => ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(bg),
         overlayColor: MaterialStateProperty.all(Colors.red.shade100),
         padding: MaterialStateProperty.all(EdgeInsetsGeometry.lerp(EdgeInsets.zero, EdgeInsets.zero, 0)),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -393,3 +411,65 @@ class MyHomePage extends GetView<MyHomeLogic> {
 }
 
 // Expanded(child: Container(height: double.infinity, color:controller.state.bgColor, child: Text(text, textAlign: TextAlign.center)));
+
+class SinglePicker extends StatefulWidget {
+  const SinglePicker({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _SinglePickerState();
+}
+
+class _SinglePickerState extends State<SinglePicker> {
+  final controller = Get.find<MyHomeLogic>();
+  int selectIndex = 0;
+
+  @override
+  void initState() {
+    selectIndex = controller.state.selectIndex.value;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      color: Colors.white,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  controller.functionConfirm(selectIndex);
+                },
+                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.transparent)),
+                child: const Text(
+                  "确定",
+                  style: TextStyle(color: Colors.redAccent, fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+          Obx(() => Expanded(
+                child: CupertinoPicker(
+                    scrollController: controller.fixedExtentScrollController,
+                    itemExtent: 50, // 每个选项的高度
+                    onSelectedItemChanged: (int index) {
+                      // 处理选中项的变化
+                      selectIndex = index;
+                    },
+                    children: List.generate(
+                      controller.state.functionTypes.length,
+                      (index) => Align(
+                        alignment: Alignment.center,
+                        child: Text(controller.state.functionTypes[index].toString()),
+                      ),
+                    )),
+              ))
+        ],
+      ),
+    );
+  }
+}
