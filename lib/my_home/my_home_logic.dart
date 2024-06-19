@@ -35,16 +35,21 @@ class MyHomeLogic extends GetxController {
   }
 
   setRandom(Function(int) f) {
+    if (!state.isCanPress) {
+      return;
+    }
+    state.isCanPress = false;
     state.js2 = state.js2 + 1;
     print(state.js2);
     state.totalValue[28] = "${state.js1}/${state.js2}";
     if (next(1, 90485) > 44625 - MyState.OFFSET8431) {
       state.totalValue[30] = '庄';
-      state.randomV = '庄';
+      state.randomValue = '庄';
     } else {
       state.totalValue[30] = '闲';
-      state.randomV = '闲';
+      state.randomValue = '闲';
     }
+    _queryAllTable2();
   }
 
   int next(int min, int max) => min + Random().nextInt(max - min + 1);
@@ -63,7 +68,7 @@ class MyHomeLogic extends GetxController {
   }
 
   add(int i, String tableName, {Table1Model? table1, Table2Model? table2}) {
-    if (state.randomV.isEmpty) {
+    if (state.randomValue.isEmpty) {
       Get.snackbar("温馨提示", '请摇塞子', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP);
       return;
     }
@@ -72,16 +77,21 @@ class MyHomeLogic extends GetxController {
       Get.snackbar("温馨提示", '请输入下注金额', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP);
       return;
     }
+    if (!state.isCanPress) {
+      Get.snackbar("温馨提示", '速度太快', duration: const Duration(seconds: 2), snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+    state.isCanPress = false;
     state.js1 = state.js1 + 1;
     state.totalValue[28] = "${state.js1}/${state.js2}";
     final table = tableName == 'table2'
         ? Table2Model(
             table2Id: state.table2List.length,
             columnXiazhujine: state.bettingMoney,
-            colmunZx: state.randomV,
+            colmunZx: state.randomValue,
             //输（-） 赢 （+）
             colmunRemark: (i == 1 || i == 2) ? "1" : "-1",
-            colmunShengfulu: ((i == 1 || i == 3) && (state.randomV == '闲')) || ((i == 2 || i == 4) && (state.randomV == '庄')) ? "正打" : "反打",
+            colmunShengfulu: ((i == 1 || i == 3) && (state.randomValue == '闲')) || ((i == 2 || i == 4) && (state.randomValue == '庄')) ? "正打" : "反打",
             colmunShuyingzhi: syzL(i),
             colmunShuyingzhiD: syzL(i),
             columnCurrentJin: getCurrentJin(i, double.parse(state.bettingMoney)).toString(),
@@ -103,7 +113,7 @@ class MyHomeLogic extends GetxController {
           print(data);
         }
         scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
-        //统计区，计算
+        //计算
         statisticalArea();
       });
     });
@@ -134,8 +144,6 @@ class MyHomeLogic extends GetxController {
   void statisticalArea() {
     state.totalValue[0] = '${state.table1List.last.columnBenjin}'; //本金
     state.totalValue[19] = '${state.table1List.last.columnMean}'; //期望值
-    state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
-    state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
 
     //图表区
     getCharts();
@@ -163,10 +171,14 @@ class MyHomeLogic extends GetxController {
     state.totalValue[21] = '${zt_syz / double.parse(removeChineseCharacters(state.totalValue[13]))}'; //平均输赢多少钱
     var d = (double.parse(state.totalValue[1]) + 1) * double.parse(state.totalValue[19]); //期望一共的值
     var parse = int.parse(state.totalValue[13]).abs();
-    state.totalValue[25] =
-        zt_syz < 0 ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x${parse}' : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x${parse}'; //还需，可负
+    state.totalValue[25] = zt_syz < 0
+        ? /*state.randomValue == '闲' || state.randomValue.isEmpty
+            ?*/
+        '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x${parse}'
+        : '须${((zt_syz.abs() + d) / double.parse(state.totalValue[23]) / parse).toStringAsFixed(1)}x${parse}' /*: '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x${parse}'*/; //还需，可负
+    state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
 
-    state.totalValue[4] = "${double.parse(state.totalValue[4]) - zt_syz}"; //当前金额
+    state.totalValue[4] = "${double.parse(state.totalValue[0]) + zt_syz}"; //当前金额
 
     //局部
     int index = state.table1List.isEmpty ? 0 : int.parse(state.table1List.last.columnRestartIndex.toString());
@@ -193,23 +205,33 @@ class MyHomeLogic extends GetxController {
     state.totalValue[22] = '${jb_syz / double.parse(removeChineseCharacters(state.totalValue[14]))}'; //平均输赢多少钱
     var dJ = (jb_count + 1) * double.parse(state.totalValue[19]); //期望一共的值
     parse = int.parse(state.totalValue[14]).abs();
-    state.totalValue[26] =
-        jb_syz < 0 ? '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x${parse}' : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x${parse}'; //还需，可负
+    state.totalValue[26] = /*state.randomValue == '闲' || state.randomValue.isEmpty
+        ? */
+            jb_syz < 0 ? '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x${parse}' : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x${parse}'
+        /* : jb_syz < 0
+            ? '须${((jb_syz.abs() + dJ) / double.parse(state.totalValue[23]) / parse).toStringAsFixed(1)}x${parse}'
+            : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x${parse}'*/
+        ; //还需，可负
 
     ///第四列
     state.totalValue[3] = '流水$runningWater';
     state.totalValue[7] = '均利${zt_syz / state.table2List.length}';
+    state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
+    state.totalValue[27] = zt_syz>0?"": (double.parse(state.totalValue[21]) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
+    state.totalValue[31] = jb_syz>0?"":(double.parse(state.totalValue[22]) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
+    state.isCanPress = true;
+    print(state.isCanPress);
   }
 
   getCurrentJin(int i, double parse) {
     switch (i) {
       case 1:
-        return (10000 + parse);
+        return (double.parse(state.table1List.last.columnBenjin.toString()) + parse);
       case 2:
-        return 10000 + parse * double.parse(state.totalValue[27]);
+        return (double.parse(state.table1List.last.columnBenjin.toString()) + parse * double.parse(state.totalValue[27]));
       case 3:
       case 4:
-        return 10000 - parse;
+        return (double.parse(state.table1List.last.columnBenjin.toString()) - parse);
     }
   }
 
