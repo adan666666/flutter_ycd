@@ -15,6 +15,7 @@ class MyHomeLogic extends GetxController {
 
   final scrollController = ScrollController();
   final textEditingController = TextEditingController();
+  final focusNode = FocusNode();
 
   FixedExtentScrollController? fixedExtentScrollController;
 
@@ -41,6 +42,7 @@ class MyHomeLogic extends GetxController {
   }
 
   showFunctionTypesAlert() {
+    focusNode.nextFocus();
     fixedExtentScrollController = FixedExtentScrollController(initialItem: state.selectIndex.value);
     Get.bottomSheet(const SinglePicker());
   }
@@ -242,7 +244,7 @@ class MyHomeLogic extends GetxController {
     state.totalValue[4] = "${double.parse(state.totalValue[0]) + zt_syz}"; //当前金额
 
     //局部
-    int index = state.table1List.isEmpty ? 0 : int.parse(state.table1List.last.columnRestartIndex.toString());
+    int index = state.table1List.isEmpty ? 0 : int.parse(state.table1List.last.columnRestartIndex.toString());//重启位置
     state.totalValue[2] = '${state.table2List.length - index}'; //一共打多少手
     var jb_y = 0;
     var jb_s = 0;
@@ -387,7 +389,6 @@ class MyHomeLogic extends GetxController {
             state.table2List.map((element) => element.colmunShuyingzhiD.toString().isEmpty ? 0.0 : double.parse(element.colmunShuyingzhiD.toString())).toList()
               ..removeWhere((element) => element == 0.0)
               ..sort();
-        print(list);
         _instance?.then((db) {
           var x = 0;
           for (int i = state.table2List.length - 1; i >= state.table2List.length - list.length; i--) {

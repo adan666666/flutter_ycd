@@ -105,7 +105,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       itemCount: controller.state.table2List.length,
                       itemBuilder: (BuildContext context, int index) => buildItem(index),
                       separatorBuilder: (BuildContext context, int index) =>
-                          Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.blue : Colors.grey),
+                          Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.red : Colors.black),
                     ),
                   )),
             ),
@@ -113,6 +113,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                focusNode: controller.focusNode,
+                autofocus: false,
                 controller: controller.textEditingController,
                 onChanged: (value) {},
                 keyboardType: TextInputType.number,
@@ -166,7 +168,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                         onTap: () {
                           controller.updateSqlite(index);
                         },
-                        child: Image.asset(height: 30, 'assets/images/delete.png')),
+                        child: Image.asset(height: 20, 'assets/images/delete.png')),
                   )
                 ])),
             //下注值
