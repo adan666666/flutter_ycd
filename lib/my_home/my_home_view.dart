@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'my_home_logic.dart';
@@ -14,120 +14,123 @@ class MyHomePage extends GetView<MyHomeLogic> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.transparent,
-        onPressed: () => controller.setRandom((int _) => print(_)),
-        child: Image.asset('assets/images/shai.png'),
-      ),
-      appBar: AppBar(
-          actions: [
-            GestureDetector(
-                onTap: () => controller.showFunctionTypesAlert(),
-                child: const Icon(
-                  Icons.edit,
-                  size: 20,
-                  color: Colors.white,
-                )),
-            const SizedBox(
-              width: 10,
-            )
-          ],
-          elevation: 0,
-          toolbarHeight: 28,
-          centerTitle: false,
-          backgroundColor: controller.state.chartBgColor,
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 12, color: Colors.white),
-          )),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            //图表区
-            buildChats(),
-            //列表区
-            ColoredBox(
-              color: controller.state.lineColor,
-              child: SizedBox(
-                height: ((Get.width - 3) / 4) / height * 8 + 4,
-                width: double.infinity,
-                child: Obx(() => GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        mainAxisSpacing: 0.5,
-                        crossAxisSpacing: 0.5,
-                        childAspectRatio: height,
-                      ),
-                      itemCount: controller.state.totalValue.length,
-                      itemBuilder: (context, index) => Container(
-                        alignment: Alignment.center,
-                        color: controller.state.bgColor,
-                        child: ColoredBox(
-                            color: Colors.transparent,
-                            child: Text(controller.state.totalValue[index],
-                                textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
+    return KeyboardDismissOnTap(
+      dismissOnCapturedTaps: true,
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.transparent,
+          onPressed: () => controller.setRandom((int _) => print(_)),
+          child: Image.asset('assets/images/shai.png'),
+        ),
+        appBar: AppBar(
+            actions: [
+              GestureDetector(
+                  onTap: () => controller.showFunctionTypesAlert(),
+                  child: const Icon(
+                    Icons.edit,
+                    size: 20,
+                    color: Colors.white,
+                  )),
+              const SizedBox(
+                width: 10,
+              )
+            ],
+            elevation: 0,
+            toolbarHeight: 28,
+            centerTitle: false,
+            backgroundColor: controller.state.chartBgColor,
+            title: Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Colors.white),
+            )),
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              //图表区
+              buildChats(),
+              //列表区
+              ColoredBox(
+                color: controller.state.lineColor,
+                child: SizedBox(
+                  height: ((Get.width - 3) / 4) / height * 8 + 4,
+                  width: double.infinity,
+                  child: Obx(() => GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          mainAxisSpacing: 0.5,
+                          crossAxisSpacing: 0.5,
+                          childAspectRatio: height,
+                        ),
+                        itemCount: controller.state.totalValue.length,
+                        itemBuilder: (context, index) => Container(
+                          alignment: Alignment.center,
+                          color: controller.state.bgColor,
+                          child: ColoredBox(
+                              color: Colors.transparent,
+                              child: Text(controller.state.totalValue[index],
+                                  textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
+                        ),
+                      )),
+                ),
+              ),
+              //按钮功能区
+              SizedBox(
+                height: 35,
+                child: Row(
+                  children: [
+                    divier2(Colors.black, 38),
+                    buildButton(Colors.red, "P", 1),
+                    divier2(Colors.black, 38),
+                    buildButton(Colors.red, "B", 2),
+                    divier2(Colors.black, 38),
+                    buildButton(Colors.green, "P", 3),
+                    divier2(Colors.black, 38),
+                    buildButton(Colors.green, "B", 4),
+                    divier2(Colors.black, 38),
+                    GestureDetector(
+                        onTap: () {
+                          controller.deleteLast();
+                        },
+                        child: SizedBox(width: 65, child: Image.asset('assets/images/delete.png', width: 35, height: 35))),
+                    Container(height: 25, width: 0.5, color: Colors.black),
+                  ],
+                ),
+              ),
+              //列表
+              Expanded(
+                child: Obx(() => ColoredBox(
+                      color: controller.state.listViewColor,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.only(left: 16,right: 5),
+                        controller: controller.scrollController,
+                        itemCount: controller.state.table2List.length,
+                        itemBuilder: (BuildContext context, int index) => buildItem(index),
+                        separatorBuilder: (BuildContext context, int index) =>
+                            Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.red : Colors.black),
                       ),
                     )),
               ),
-            ),
-            //按钮功能区
-            SizedBox(
-              height: 35,
-              child: Row(
-                children: [
-                  divier2(Colors.black, 38),
-                  buildButton(Colors.red, "P", 1),
-                  divier2(Colors.black, 38),
-                  buildButton(Colors.red, "B", 2),
-                  divier2(Colors.black, 38),
-                  buildButton(Colors.green, "P", 3),
-                  divier2(Colors.black, 38),
-                  buildButton(Colors.green, "B", 4),
-                  divier2(Colors.black, 38),
-                  GestureDetector(
-                      onTap: () {
-                        controller.deleteLast();
-                      },
-                      child: SizedBox(width: 65, child: Image.asset('assets/images/delete.png', width: 35, height: 35))),
-                  Container(height: 25, width: 0.5, color: Colors.black),
-                ],
-              ),
-            ),
-            //列表
-            Expanded(
-              child: Obx(() => ColoredBox(
-                    color: controller.state.listViewColor,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.only(left: 16,right: 5),
-                      controller: controller.scrollController,
-                      itemCount: controller.state.table2List.length,
-                      itemBuilder: (BuildContext context, int index) => buildItem(index),
-                      separatorBuilder: (BuildContext context, int index) =>
-                          Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.red : Colors.black),
-                    ),
-                  )),
-            ),
-            //输入金额
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                focusNode: controller.focusNode,
-                autofocus: false,
-                controller: controller.textEditingController,
-                onChanged: (value) {},
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(left: 20),
-                  border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
-                  hintText: "请输入下注金额",
-                  hintStyle: TextStyle(fontSize: 12),
+              //输入金额
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  focusNode: controller.focusNode,
+                  autofocus: false,
+                  controller: controller.textEditingController,
+                  onChanged: (value) {},
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.only(left: 20),
+                    border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
+                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
+                    hintText: "请输入下注金额",
+                    hintStyle: TextStyle(fontSize: 12),
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
