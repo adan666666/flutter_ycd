@@ -107,7 +107,7 @@ class MyHomeLogic extends GetxController {
       state.totalValue[30] = '闲';
       state.randomValue = '闲';
     }
-    _queryAllTable2();
+    state.isCanPress = true;
   }
 
   int next(int min, int max) => min + Random().nextInt(max - min + 1);
@@ -175,7 +175,7 @@ class MyHomeLogic extends GetxController {
         for (var data in value) {
           state.table2List.add(Table2Model.fromJson(data));
         }
-        scrollController.jumpTo(scrollController.position.maxScrollExtent + 50);
+        scrollController.jumpTo(scrollController.position.maxScrollExtent + 35);
         if (state.table2List.isNotEmpty) {
           //计算
           statisticalArea();
@@ -187,21 +187,21 @@ class MyHomeLogic extends GetxController {
   }
 
   getCharts() {
-    var listZiJi = <double>[];
-    var c = 0;
-    for (var i = 0; i < state.table2List.length; i++) {
-      c++;
-      if (c > state.chartData.length) {
-        break;
+    var chartDataTemp = <double>[];
+    if (state.table2List.length <= state.chartData.length) {
+      for (var i = 0; i < state.table2List.length; i++) {
+        chartDataTemp.add(double.parse(state.table2List[i].columnCurrentJin.toString()));
       }
-      listZiJi.add(double.parse(state.table2List[i].columnCurrentJin.toString()));
+    } else {
+      for (var i = state.table2List.length - state.chartData.length ; i < state.table2List.length; i++) {
+        chartDataTemp.add(double.parse(state.table2List[i].columnCurrentJin.toString()));
+      }
     }
-    if (listZiJi.isNotEmpty) {
-      print(listZiJi);
+    if (chartDataTemp.isNotEmpty) {
       var z = 0;
-      for (var i = listZiJi.length - 1; i >= 0; i--) {
+      for (var i = chartDataTemp.length - 1; i >= 0; i--) {
         z++;
-        state.chartData[state.chartData.length - z].sales = listZiJi[i];
+        state.chartData[state.chartData.length - z].sales = chartDataTemp[i];
       }
       var removeLast = state.chartData.removeLast();
       Future.delayed(const Duration(milliseconds: 300), () => state.chartData.add(removeLast));
@@ -345,17 +345,24 @@ class MyHomeLogic extends GetxController {
 
   void reStart() {
     // valueC.last..update('column_restart_index', (value) => "${state.table2List.length - 1}")
-    _instance?.then((value) => value.query(DbHelper.table1).then((valueC) => _instance?.then((value) => value
-        .insert(
-            DbHelper.table1,
-            Table1Model(
-              columnBenjin: valueC.last['column_benjin'].toString(),
-              columnYongJin: valueC.last['column_yongJin'].toString(),
-              columnMean: valueC.last['column_mean'].toString(),
-              columnRestartIndex: "${state.table2List.length}",
-              columnLiushuiIndex: valueC.last['column_liushui_index'].toString(),
-            ).toJson())
-        .then((value) => queryAll()))));
+    _instance?.then((value) => value.query(DbHelper.table1).then((value) => _instance?.then((db) {
+          //重启时，清除消数列数据
+          for (int i = 0; i < state.table2List.length; i++) {
+            db.update(DbHelper.table2, state.table2List[i].toJson()..update('colmun_shuyingzhi_d', (value) => ''),
+                where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
+          }
+          return db
+              .insert(
+                  DbHelper.table1,
+                  Table1Model(
+                    columnBenjin: value.last['column_benjin'].toString(),
+                    columnYongJin: value.last['column_yongJin'].toString(),
+                    columnMean: value.last['column_mean'].toString(),
+                    columnRestartIndex: "${state.table2List.length}",
+                    columnLiushuiIndex: value.last['column_liushui_index'].toString(),
+                  ).toJson())
+              .then((value) => queryAll());
+        })));
   }
 
   void updateBenJin(String b) {
@@ -375,7 +382,23 @@ class MyHomeLogic extends GetxController {
 
   void functionConfirm(int i) {
     switch (i) {
-      case 0:
+      case 0: //排序
+        var list =
+            state.table2List.map((element) => element.colmunShuyingzhiD.toString().isEmpty ? 0.0 : double.parse(element.colmunShuyingzhiD.toString())).toList()
+              ..removeWhere((element) => element == 0.0)
+              ..sort();
+        print(list);
+        _instance?.then((db) {
+          var x = 0;
+          for (int i = state.table2List.length - 1; i >= state.table2List.length - list.length; i--) {
+            x++;
+            if (x > list.length) {
+              break;
+            }
+            db.update(DbHelper.table2, state.table2List[i].toJson()..update('colmun_shuyingzhi_d', (value) => '${list[list.length - x]}'),
+                where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
+          }
+        }).then((value) => _queryAllTable2());
         break;
       case 1:
         break;
@@ -392,7 +415,11 @@ class MyHomeLogic extends GetxController {
         break;
       case 3:
         break;
-      case 4:
+      case 4: //删除本页
+        _instance?.then((db) {
+          db.rawQuery('DELETE FROM ${DbHelper.table1}');
+          return db.rawQuery('DELETE FROM ${DbHelper.table2}');
+        }).then((value) => dropAll());
         break;
       case 5:
         break;
@@ -413,6 +440,14 @@ class MyHomeLogic extends GetxController {
       case 8:
         break;
     }
+  }
+
+  void dropAll() {
+    state.table2List.clear();
+    state.randomValue = '';
+    List.generate(32, (index) => state.totalValue[index] = index.toString());
+    _instance?.then((db) => db.insert(DbHelper.table1,
+        Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson()));
   }
 }
 

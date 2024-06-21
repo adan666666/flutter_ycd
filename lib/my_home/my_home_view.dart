@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'my_home_logic.dart';
@@ -99,10 +100,12 @@ class MyHomePage extends GetView<MyHomeLogic> {
               child: Obx(() => ColoredBox(
                     color: controller.state.listViewColor,
                     child: ListView.separated(
+                      padding: const EdgeInsets.only(left: 16,right: 5),
                       controller: controller.scrollController,
                       itemCount: controller.state.table2List.length,
                       itemBuilder: (BuildContext context, int index) => buildItem(index),
-                      separatorBuilder: (BuildContext context, int index) => Divider(height: 2, indent: 5, thickness: 0.5, color: Colors.blue[index % 9 * 100]),
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.blue : Colors.grey),
                     ),
                   )),
             ),
@@ -157,11 +160,14 @@ class MyHomePage extends GetView<MyHomeLogic> {
                     ),
                   ),
                   const SizedBox(width: 5),
-                  GestureDetector(
-                      onTap: () {
-                        controller.updateSqlite(index);
-                      },
-                      child: Image.asset(height: 30, 'assets/images/delete.png'))
+                  Visibility(
+                    visible: controller.state.table2List[index].colmunShuyingzhiD!.isNotEmpty,
+                    child: GestureDetector(
+                        onTap: () {
+                          controller.updateSqlite(index);
+                        },
+                        child: Image.asset(height: 30, 'assets/images/delete.png')),
+                  )
                 ])),
             //下注值
             Container(
