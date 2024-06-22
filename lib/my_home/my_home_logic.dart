@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -434,6 +436,9 @@ class MyHomeLogic extends GetxController {
         updateBenJin(textEditingController.text.toString());
         break;
       case 3:
+        state.js2 = state.js1;
+        state.totalValue[28] = "${state.js1}/${state.js2}";
+        Loading.dismiss();
         break;
       case 4: //删除本页
         _instance?.then((db) {
@@ -451,8 +456,10 @@ class MyHomeLogic extends GetxController {
         print(tempDir);
         print(downloadsDir);
 
-        // saveString();
-        getString();
+        _instance
+            ?.then((db) => db.query(DbHelper.table1))
+            .then((value1) => _instance?.then((db) => db.query(DbHelper.table2)).then((value2) => saveString('${jsonEncode(value1)}\n${jsonEncode(value2)}')));
+
         break;
       case 7:
         Get.defaultDialog(
@@ -476,6 +483,10 @@ class MyHomeLogic extends GetxController {
           break;
         }
         updateQiWangZhi(textEditingController.text.toString());
+        break;
+      case 9: //恢复数据
+        Loading.show();
+        getString();
         break;
     }
   }
@@ -505,13 +516,12 @@ class MyHomeLogic extends GetxController {
   /**
    * 利用文件存储数据
    */
-  saveString() async {
+  saveString(String s) async {
     final file = await getFile('file.text');
     //写入字符串
-    file.writeAsString('你好， 存储成功！').then((value) {
+    file.writeAsString(s).then((value) {
       Loading.dismiss();
       print('写入完成');
-      Loading.dismiss();
     });
   }
 
@@ -522,9 +532,19 @@ class MyHomeLogic extends GetxController {
     final file = await getFile('file.text');
     var filePath = file.path;
     file.readAsString().then((String value) {
-      var s = '文件存储路径：'+filePath + '\n' + value;
+      var s = '文件存储路径：' + filePath;
       print(s);
+      var split1 = value.split('\n')[0];
+      print(jsonDecode(split1).length);
+      print(split1);
+      var split2 = value.split('\n')[1];
+      print(jsonDecode(split2).length);
+      print(split2);
       Loading.dismiss();
+      // for (var element in (split1 as List)) {
+      //   _instance?.then((db) => db.insert(DbHelper.table1, element));
+      // }
+
     });
   }
 
