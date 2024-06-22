@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ycd/my_db/DbHelper.dart';
 import 'package:ycd/my_db/Table1Model.dart';
@@ -48,6 +50,7 @@ class MyHomeLogic extends GetxController {
   }
 
   String pVal2() {
+    if (state.bettingMoney.isEmpty || !state.bettingMoney.isNum) return '';
     var x = double.parse(state.totalValue[18]); //总输赢
     var y = double.parse(state.bettingMoney); //输入框下注额
     var z = double.parse(removeChineseCharacters(state.totalValue[14])); //净胜
@@ -68,7 +71,7 @@ class MyHomeLogic extends GetxController {
   }
 
   String pVal1() {
-    if (state.bettingMoney.isEmpty) return '';
+    if (state.bettingMoney.isEmpty || !state.bettingMoney.isNum) return '';
     var x = double.parse(state.totalValue[17]); //总输赢
     var y = double.parse(state.bettingMoney); //输入框下注额
     var z = double.parse(removeChineseCharacters(state.totalValue[13])); //净胜
@@ -146,6 +149,7 @@ class MyHomeLogic extends GetxController {
       Get.snackbar("温馨提示", '速度太快', duration: const Duration(seconds: 2), snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white.withOpacity(0.7));
       return;
     }
+    Loading.show();
     state.isCanPress = false;
     state.js1 = state.js1 + 1;
     state.totalValue[28] = "${state.js1}/${state.js2}";
@@ -182,6 +186,7 @@ class MyHomeLogic extends GetxController {
           statisticalArea();
         } else {
           state.isCanPress = true;
+          Loading.dismiss();
         }
       });
     });
@@ -289,12 +294,12 @@ class MyHomeLogic extends GetxController {
     state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
     state.totalValue[27] = state.totalValue[14] == '0'
         ? ""
-        : state.totalValue[21]=='-'
+        : state.totalValue[21] == '-'
             ? ""
             : (double.parse(removeChineseCharacters(state.totalValue[25].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
     state.totalValue[31] = state.totalValue[14] == '0'
         ? ""
-        : state.totalValue[22]=='-'
+        : state.totalValue[22] == '-'
             ? ""
             : (double.parse(removeChineseCharacters(state.totalValue[26].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2);
 
@@ -307,6 +312,7 @@ class MyHomeLogic extends GetxController {
       state.totalValue[24] = pVal2();
     }
     state.isCanPress = true;
+    Loading.dismiss();
   }
 
   getCurrentJin(int i, double playMoney) {
@@ -387,7 +393,8 @@ class MyHomeLogic extends GetxController {
         .then((value) => queryAll()))));
   }
 
-  void functionConfirm(int i) {
+  Future<void> functionConfirm(int i) async {
+    Loading.show();
     switch (i) {
       case 0: //排序
         var list =
@@ -436,7 +443,16 @@ class MyHomeLogic extends GetxController {
         break;
       case 5:
         break;
-      case 6:
+      case 6: //备份数据
+        final Directory documentsDirectory = await getApplicationDocumentsDirectory();
+        final Directory tempDir = await getTemporaryDirectory();
+        final Directory? downloadsDir = await getDownloadsDirectory();
+        print(documentsDirectory);
+        print(tempDir);
+        print(downloadsDir);
+
+        // saveString();
+        getString();
         break;
       case 7:
         Get.defaultDialog(
@@ -484,6 +500,46 @@ class MyHomeLogic extends GetxController {
               columnLiushuiIndex: value.last['column_liushui_index'].toString(),
             ).toJson())
         .then((value) => queryAll()))));
+  }
+
+  /**
+   * 利用文件存储数据
+   */
+  saveString() async {
+    final file = await getFile('file.text');
+    //写入字符串
+    file.writeAsString('你好， 存储成功！').then((value) {
+      Loading.dismiss();
+      print('写入完成');
+      Loading.dismiss();
+    });
+  }
+
+  /**
+   * 获取存在文件中的数据
+   */
+  Future getString() async {
+    final file = await getFile('file.text');
+    var filePath = file.path;
+    file.readAsString().then((String value) {
+      var s = '文件存储路径：'+filePath + '\n' + value;
+      print(s);
+      Loading.dismiss();
+    });
+  }
+
+  /**
+   * 初始化文件路径
+   */
+  Future<File> getFile(String fileName) async {
+    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
+    final fileDirectory = await getApplicationDocumentsDirectory();
+
+    //获取存储路径
+    final filePath = fileDirectory.path;
+
+    //或者file对象（操作文件记得导入import 'dart:io'）
+    return new File(filePath + "/" + fileName);
   }
 }
 

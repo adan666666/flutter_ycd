@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -102,7 +104,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 child: Obx(() => ColoredBox(
                       color: controller.state.listViewColor,
                       child: ListView.separated(
-                        padding: const EdgeInsets.only(left: 16,right: 5),
+                        padding: const EdgeInsets.only(left: 10,right: 5),
                         controller: controller.scrollController,
                         itemCount: controller.state.table2List.length,
                         itemBuilder: (BuildContext context, int index) => buildItem(index),
@@ -112,20 +114,25 @@ class MyHomePage extends GetView<MyHomeLogic> {
                     )),
               ),
               //输入金额
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  focusNode: controller.focusNode,
-                  autofocus: false,
-                  controller: controller.textEditingController,
-                  onChanged: (value) {},
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.only(left: 20),
-                    border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
-                    hintText: "请输入下注金额",
-                    hintStyle: TextStyle(fontSize: 12),
+              SafeArea(
+                bottom: true,
+                child: SizedBox(
+                  height: 40,
+                  child: TextField(
+                    focusNode: controller.focusNode,
+                    autofocus: false,
+                    controller: controller.textEditingController,
+                    onChanged: (value) {},
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      icon: Icon(CupertinoIcons.ant_fill),
+                      contentPadding: EdgeInsets.only(bottom: 7),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
+                      // border: OutlineInputBorder(borderSide: BorderSide(width: 5, color: Colors.red)),
+                      // focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1, color: Colors.blue)),
+                      hintText: "请输入下注金额",
+                      hintStyle: TextStyle(fontSize: 12),
+                    ),
                   ),
                 ),
               )
@@ -141,7 +148,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //序号
-            Text("${controller.state.table2List[index].table2Id + 1}"),
+            Container(color: Colors.transparent,width: 45, child: Text("${controller.state.table2List[index].table2Id + 1}")),
             //输赢
             Container(
               width: 80,
@@ -176,7 +183,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 ])),
             //下注值
             Container(
-              width: 80,
+              width: 55,
               alignment: Alignment.centerRight,
               color: Colors.transparent,
               child: Text("${controller.state.table2List[index].columnXiazhujine}"),
