@@ -496,7 +496,7 @@ class MyHomeLogic extends GetxController {
     state.randomValue = '';
     List.generate(32, (index) => state.totalValue[index] = index.toString());
     _instance?.then((db) => db.insert(DbHelper.table1,
-        Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson()));
+        Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson())).then((value) => Loading.dismiss());
   }
 
   void updateQiWangZhi(String qiwangzhi) {
@@ -521,7 +521,7 @@ class MyHomeLogic extends GetxController {
     //写入字符串
     file.writeAsString(s).then((value) {
       Loading.dismiss();
-      print('写入完成');
+      print('=====备份完成=====');
     });
   }
 
@@ -540,11 +540,14 @@ class MyHomeLogic extends GetxController {
       var split2 = value.split('\n')[1];
       print(jsonDecode(split2).length);
       print(split2);
-      Loading.dismiss();
-      // for (var element in (split1 as List)) {
-      //   _instance?.then((db) => db.insert(DbHelper.table1, element));
-      // }
-
+      for (var element in jsonDecode(split1)) {
+        _instance?.then((db) => db.insert(DbHelper.table1, element));
+      }
+      for (var element in jsonDecode(split2)) {
+        _instance?.then((db) => db.insert(DbHelper.table2, element));
+      }
+      print('=====写入数据库完成====');
+      queryAll();
     });
   }
 
