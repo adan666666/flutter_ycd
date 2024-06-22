@@ -12,7 +12,6 @@ class MyHomePage extends GetView<MyHomeLogic> {
   const MyHomePage({super.key, required this.title});
 
   final String title;
-  static const double height = 16 / 3;
 
   @override
   Widget build(BuildContext context) {
@@ -55,14 +54,14 @@ class MyHomePage extends GetView<MyHomeLogic> {
               ColoredBox(
                 color: controller.state.lineColor,
                 child: SizedBox(
-                  height: ((Get.width - 3) / 4) / height * 8 + 4,
+                  height: ((MediaQuery.of(context).size.width - 3) / 4) / MyState.height * 8 + 4,
                   width: double.infinity,
                   child: Obx(() => GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                           mainAxisSpacing: 0.5,
                           crossAxisSpacing: 0.5,
-                          childAspectRatio: height,
+                          childAspectRatio: MyState.height,
                         ),
                         itemCount: controller.state.totalValue.length,
                         itemBuilder: (context, index) => Container(

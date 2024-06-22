@@ -7,6 +7,7 @@ import '../my_db/Table2Model.dart';
 
 class MyState {
   static const OFFSET8431 = 8431;
+  static const double height = 16 / 3;
   var isLoading = false;
   var isCanPress = true;
   var randomValue = ''; //随机的出来的庄闲
