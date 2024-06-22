@@ -51,20 +51,19 @@ class MyHomeLogic extends GetxController {
     var x = double.parse(state.totalValue[18]); //总输赢
     var y = double.parse(state.bettingMoney); //输入框下注额
     var z = double.parse(removeChineseCharacters(state.totalValue[14])); //净胜
-    var c11 = (double.parse(removeChineseCharacters(state.totalValue[14])).abs()); //净胜绝对值
+    var z1 = (double.parse(removeChineseCharacters(state.totalValue[14])).abs()); //净胜绝对值
     if (z == 0) {
-      return "";
+      return "回合结束";
     } else if (z > 0) /*赢>输的情况*/ {
-      if ((c11 - 1) <= 0) {
-        return '${((x + y) / (c11 + 1)).toStringAsFixed(1)}/';
+      if ((z1 - 1) <= 0) {
+        return '${((x + y) / (z1 + 1)).toStringAsFixed(1)}/';
       }
-      return '${((x + y) / (c11 + 1)).toStringAsFixed(1)}/${((x - y) / (c11 - 1)).toStringAsFixed(1)}';
+      return '${((x + y) / (z1 + 1)).toStringAsFixed(1)}/${((x - y) / (z1 - 1)).toStringAsFixed(1)}';
     } else {
-      if ((c11 - 1) <= 0) {
-        Loading.showToast(toast: '/${((x - y) / (c11 + 1)).toStringAsFixed(1)}');
-        return '/${((x - y) / (c11 + 1)).toStringAsFixed(1)}';
+      if ((z1 - 1) <= 0) {
+        return '/${((x - y) / (z1 + 1)).toStringAsFixed(1)}';
       }
-      return '${((x + y) / (c11 - 1)).toStringAsFixed(1)}/${((x - y) / (c11 + 1)).toStringAsFixed(1)}';
+      return '${((x + y) / (z1 - 1)).toStringAsFixed(1)}/${((x - y) / (z1 + 1)).toStringAsFixed(1)}';
     }
   }
 
@@ -73,20 +72,19 @@ class MyHomeLogic extends GetxController {
     var x = double.parse(state.totalValue[17]); //总输赢
     var y = double.parse(state.bettingMoney); //输入框下注额
     var z = double.parse(removeChineseCharacters(state.totalValue[13])); //净胜
-    var c11 = (double.parse(removeChineseCharacters(state.totalValue[13])).abs()); //净胜绝对值
+    var z1 = (double.parse(removeChineseCharacters(state.totalValue[13])).abs()); //净胜绝对值
     if (z == 0) {
-      return "";
+      return "回合结束";
     } else if (z > 0) /*赢>输的情况*/ {
-      if ((c11 - 1) <= 0) {
-        return '${((x + y) / (c11 + 1)).toStringAsFixed(1)}/';
+      if ((z1 - 1) <= 0) {
+        return '${((x + y) / (z1 + 1)).toStringAsFixed(1)}/';
       }
-      return '${((x + y) / (c11 + 1)).toStringAsFixed(1)}/${((x - y) / (c11 - 1)).toStringAsFixed(1)}';
+      return '${((x + y) / (z1 + 1)).toStringAsFixed(1)}/${((x - y) / (z1 - 1)).toStringAsFixed(1)}';
     } else {
-      if ((c11 - 1) <= 0) {
-        Loading.showToast(toast: '/${((x - y) / (c11 + 1)).toStringAsFixed(1)}');
-        return '/${((x - y) / (c11 + 1)).toStringAsFixed(1)}';
+      if ((z1 - 1) <= 0) {
+        return '/${((x - y) / (z1 + 1)).toStringAsFixed(1)}';
       }
-      return '${((x + y) / (c11 - 1)).toStringAsFixed(1)}/${((x - y) / (c11 + 1)).toStringAsFixed(1)}';
+      return '${((x + y) / (z1 - 1)).toStringAsFixed(1)}/${((x - y) / (z1 + 1)).toStringAsFixed(1)}';
     }
   }
 
@@ -234,12 +232,16 @@ class MyHomeLogic extends GetxController {
     state.totalValue[5] = '$zt_y'; //胜
     state.totalValue[9] = '${(zt_y / double.parse(state.totalValue[1]) * 100).toStringAsFixed(2)}%'; //胜率
     state.totalValue[13] = '${zt_y.abs() - zt_s.abs()}'; //净胜~须多少手回到50%
-    state.totalValue[17] = '$zt_syz'; //一共输赢多少钱
-    state.totalValue[21] = (zt_syz / double.parse(removeChineseCharacters(state.totalValue[13])).abs()).toStringAsFixed(2); //平均输赢多少钱
+    state.totalValue[17] = zt_syz.toStringAsFixed(3); //一共输赢多少钱
+    state.totalValue[21] =
+        state.totalValue[13] == '0' ? '-' : (zt_syz / double.parse(removeChineseCharacters(state.totalValue[13])).abs()).toStringAsFixed(2); //平均赢
     var d = (double.parse(state.totalValue[1]) + 1) * double.parse(state.totalValue[19]); //期望一共的值
     var parse = int.parse(state.totalValue[13]).abs();
-    state.totalValue[25] =
-        zt_syz < 0 ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x$parse' : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
+    state.totalValue[25] = state.totalValue[13] == '0'
+        ? '-'
+        : zt_syz < 0
+            ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x$parse'
+            : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
     state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
 
     state.totalValue[4] = "${double.parse(state.totalValue[0]) + zt_syz}"; //当前金额
@@ -265,33 +267,36 @@ class MyHomeLogic extends GetxController {
     state.totalValue[6] = '$jb_y'; //净胜
     state.totalValue[10] = jb_count == 0 ? "" : '${(jb_y / jb_count * 100).toStringAsFixed(2)}%'; //胜率
     state.totalValue[14] = '${jb_y.abs() - jb_s.abs()}'; //净胜~须多少手回到50%
-    state.totalValue[18] = '$jb_syz'; //一共输赢多少钱
-    state.totalValue[22] = jb_count <= 0 ? "" : (jb_syz / double.parse(removeChineseCharacters(state.totalValue[14])).abs()).toStringAsFixed(3); //平均赢
+    state.totalValue[18] = jb_syz.toStringAsFixed(3); //一共输赢多少钱
+    state.totalValue[22] =
+        state.totalValue[14] == '0' ? "-" : (jb_syz / double.parse(removeChineseCharacters(state.totalValue[14])).abs()).toStringAsFixed(3); //平均赢
     var dJ = (jb_count + 1) * double.parse(state.totalValue[19]); //期望一共的值
     parse = int.parse(state.totalValue[14]).abs();
-    state.totalValue[26] = jb_syz < 0
-        ? parse == 0
-            ? ''
-            : '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x$parse'
-        : parse == 0
-            ? ''
-            : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x$parse';
+    state.totalValue[26] = state.totalValue[14] == '0'
+        ? "-"
+        : jb_syz < 0
+            ? parse == 0
+                ? ''
+                : '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x$parse'
+            : parse == 0
+                ? ''
+                : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x$parse';
 
     ///第四列
     state.totalValue[3] = '流水$runningWater';
-    state.totalValue[7] = '均利${zt_syz ~/ state.table2List.length}';
+    state.totalValue[7] = '均利${(zt_syz / state.table2List.length).toStringAsFixed(2)}';
     state.totalValue[11] = '连胜负';
     state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
-    state.totalValue[27] = zt_syz > 0
+    state.totalValue[27] = state.totalValue[14] == '0'
         ? ""
-        : double.parse(state.totalValue[21]).isNaN || !state.totalValue[25].split("x")[0].replaceAll("须", '').isNum
+        : state.totalValue[21]=='-'
             ? ""
-            : (double.parse(state.totalValue[25].split("x")[0].replaceAll("须", '')) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
-    state.totalValue[31] = jb_syz > 0
+            : (double.parse(removeChineseCharacters(state.totalValue[25].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
+    state.totalValue[31] = state.totalValue[14] == '0'
         ? ""
-        : state.totalValue[22].isEmpty || double.parse(state.totalValue[22]).isNaN || state.totalValue[26].split("x")[0].replaceAll("须", '').isEmpty
+        : state.totalValue[22]=='-'
             ? ""
-            : (double.parse(state.totalValue[26].split("x")[0].replaceAll("须", '')) / double.parse(state.totalValue[23])).toStringAsFixed(2);
+            : (double.parse(removeChineseCharacters(state.totalValue[26].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2);
 
     //预测平均值
     if (textEditingController.text.isNotEmpty) {
