@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:ycd/my_db/DbHelper.dart';
 import 'package:ycd/my_db/Table1Model.dart';
 import 'package:ycd/utils/loading.dart';
@@ -23,9 +26,14 @@ class MyHomeLogic extends GetxController {
 
   FixedExtentScrollController? fixedExtentScrollController;
 
+// 定义一个计时器，用于延时锁屏
+  Timer? _timer;
+
   @override
   void onInit() {
     super.onInit();
+    Wakelock.enable();
+    onUserInteraction();
     _instance = DbHelper.instance.getDb();
 
     List.generate(32, (index) => state.totalValue.add('$index'));
@@ -95,7 +103,10 @@ class MyHomeLogic extends GetxController {
 
   @override
   void onClose() {
+    // 取消计时器
+    _timer?.cancel();
     super.onClose();
+    Wakelock.disable();
     textEditingController.dispose();
   }
 
@@ -223,10 +234,13 @@ class MyHomeLogic extends GetxController {
     //统计区，计算
     state.totalValue[1] = '${state.table2List.length}'; //一共打多少手
 
+    //总体
     var zt_y = 0;
     var zt_s = 0;
     var zt_syz = 0.0;
     var runningWater = 0.0;
+    var lianSheng=0;
+    var lianFu=0;
     for (var element in state.table2List) {
       zt_syz += double.parse(element.colmunShuyingzhi.toString());
       runningWater += double.parse(element.columnXiazhujine.toString());
@@ -396,9 +410,9 @@ class MyHomeLogic extends GetxController {
   }
 
   Future<void> functionConfirm(int i) async {
-    Loading.show();
     switch (i) {
       case 0: //排序
+        Loading.show();
         var list =
             state.table2List.map((element) => element.colmunShuyingzhiD.toString().isEmpty ? 0.0 : double.parse(element.colmunShuyingzhiD.toString())).toList()
               ..removeWhere((element) => element == 0.0)
@@ -416,6 +430,7 @@ class MyHomeLogic extends GetxController {
         }).then((value) => _queryAllTable2());
         break;
       case 1: //清除数据
+        Loading.show();
         _instance?.then((db) {
           for (int i = 0; i < state.table2List.length; i++) {
             if (state.table2List[i].colmunShuyingzhiD!.isEmpty) continue;
@@ -425,6 +440,7 @@ class MyHomeLogic extends GetxController {
         }).then((value) => queryAll());
         break;
       case 2:
+        Loading.show();
         if (textEditingController.text.toString().isEmpty) {
           Loading.showToast(toast: '请输入金额 ${textEditingController.text} ');
           break;
@@ -436,11 +452,13 @@ class MyHomeLogic extends GetxController {
         updateBenJin(textEditingController.text.toString());
         break;
       case 3:
+        Loading.show();
         state.js2 = state.js1;
         state.totalValue[28] = "${state.js1}/${state.js2}";
         Loading.dismiss();
         break;
       case 4: //删除本页
+        Loading.show();
         _instance?.then((db) {
           db.rawQuery('DELETE FROM ${DbHelper.table1}');
           return db.rawQuery('DELETE FROM ${DbHelper.table2}');
@@ -449,6 +467,7 @@ class MyHomeLogic extends GetxController {
       case 5:
         break;
       case 6: //备份数据
+        Loading.show();
         final Directory documentsDirectory = await getApplicationDocumentsDirectory();
         final Directory tempDir = await getTemporaryDirectory();
         final Directory? downloadsDir = await getDownloadsDirectory();
@@ -468,6 +487,7 @@ class MyHomeLogic extends GetxController {
           content: const Text('是否重启'),
           onCancel: () {},
           onConfirm: () {
+            Loading.show();
             reStart();
             Get.back();
           },
@@ -495,8 +515,10 @@ class MyHomeLogic extends GetxController {
     state.table2List.clear();
     state.randomValue = '';
     List.generate(32, (index) => state.totalValue[index] = index.toString());
-    _instance?.then((db) => db.insert(DbHelper.table1,
-        Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson())).then((value) => Loading.dismiss());
+    _instance
+        ?.then((db) => db.insert(DbHelper.table1,
+            Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson()))
+        .then((value) => Loading.dismiss());
   }
 
   void updateQiWangZhi(String qiwangzhi) {
@@ -530,6 +552,11 @@ class MyHomeLogic extends GetxController {
    */
   Future getString() async {
     final file = await getFile('file.text');
+    if (!await file.exists()) {
+      Loading.dismiss();
+      Loading.showToast(toast: '文件不存在');
+      return;
+    }
     var filePath = file.path;
     file.readAsString().then((String value) {
       var s = '文件存储路径：' + filePath;
@@ -562,7 +589,30 @@ class MyHomeLogic extends GetxController {
     final filePath = fileDirectory.path;
 
     //或者file对象（操作文件记得导入import 'dart:io'）
-    return new File(filePath + "/" + fileName);
+    return File(filePath + "/" + fileName);
+  }
+
+  lockScreen() {
+    _timer?.cancel();
+    _timer=null;
+    screenLock(
+      context: Get.context!,
+      correctString: '1234',
+      canCancel: false, //是否可以取消
+      onUnlocked: () {
+        Get.back();
+        onUserInteraction();
+      },
+    );
+  }
+
+  void onUserInteraction() {
+    // 取消之前的计时器
+    _timer?.cancel();
+    // 设置新的计时器，时间设置为你想要的锁屏延时时间
+    _timer = Timer(const Duration(seconds: 60*3), () {
+      lockScreen();
+    });
   }
 }
 
