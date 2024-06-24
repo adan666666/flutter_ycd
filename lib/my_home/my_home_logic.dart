@@ -239,15 +239,26 @@ class MyHomeLogic extends GetxController {
     var zt_s = 0;
     var zt_syz = 0.0;
     var runningWater = 0.0;
-    var lianSheng=0;
-    var lianFu=0;
-    for (var element in state.table2List) {
+    var countLianShengFu = 1;
+    var it = state.table2List;
+    for (var index = 0; index < state.table2List.length; index++) {
+      var element = state.table2List[index];
       zt_syz += double.parse(element.colmunShuyingzhi.toString());
       runningWater += double.parse(element.columnXiazhujine.toString());
       if (element.colmunRemark!.startsWith("-1")) {
         zt_s--;
       } else {
         zt_y++;
+      }
+      //连胜负
+      if (it.length > 1 && (index - 1) >= 0) {
+        var shuyingzhi = it[(index - 1)].colmunShuyingzhi; //上一个
+        var shuyingzhi1 = element.colmunShuyingzhi;
+        if ((double.parse(shuyingzhi1!) > 0 && double.parse(shuyingzhi!) > 0) || (double.parse(shuyingzhi1) < 0 && double.parse(shuyingzhi!) < 0)) {
+          countLianShengFu++;
+        } else {
+          countLianShengFu = 1;
+        }
       }
     }
     state.totalValue[5] = '$zt_y'; //胜
@@ -306,7 +317,7 @@ class MyHomeLogic extends GetxController {
     ///第四列
     state.totalValue[3] = '流水$runningWater';
     state.totalValue[7] = '均利${(zt_syz / state.table2List.length).toStringAsFixed(2)}';
-    state.totalValue[11] = '连胜负';
+    state.totalValue[11] = '$countLianShengFu';
     state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
     state.totalValue[27] = state.totalValue[14] == '0'
         ? ""
@@ -594,11 +605,23 @@ class MyHomeLogic extends GetxController {
 
   lockScreen() {
     _timer?.cancel();
-    _timer=null;
+    _timer = null;
     screenLock(
+      onValidate: (input) => getFuture(input),
+      secretsConfig: const SecretsConfig(
+        spacing: 15, // or spacingRatio
+        padding: EdgeInsets.all(40),
+        secretConfig: SecretConfig(
+          borderColor: Colors.red,
+          borderSize: 1.0,
+          disabledColor: Colors.black,
+          enabledColor: Colors.red,
+        ),
+      ),
       context: Get.context!,
       correctString: '1234',
-      canCancel: false, //是否可以取消
+      canCancel: false,
+      //是否可以取消
       onUnlocked: () {
         Get.back();
         onUserInteraction();
@@ -610,10 +633,18 @@ class MyHomeLogic extends GetxController {
     // 取消之前的计时器
     _timer?.cancel();
     // 设置新的计时器，时间设置为你想要的锁屏延时时间
-    _timer = Timer(const Duration(seconds: 60*3), () {
+    _timer = Timer(const Duration(seconds: 60 * 2), () {
       lockScreen();
     });
   }
+
+  getFuture(String input) => Future.delayed(const Duration(seconds: 1), () {
+        if (input.length == 4) {
+          return true;
+        } else {
+          return false;
+        }
+      });
 }
 
 String removeChineseCharacters(String input) {

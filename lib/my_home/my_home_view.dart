@@ -33,6 +33,13 @@ class MyHomePage extends GetView<MyHomeLogic> {
           appBar: AppBar(
               actions: [
                 GestureDetector(
+                    onTap: () => controller.lockScreen(),
+                    child: const Icon(
+                      Icons.lock,
+                      size: 20,
+                      color: Colors.white,
+                    )),
+                GestureDetector(
                     onTap: () => controller.showFunctionTypesAlert(),
                     child: const Icon(
                       Icons.edit,
