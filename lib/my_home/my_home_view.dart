@@ -122,7 +122,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                                       color: controller.state.bgColor,
                                       child: Text(
                                           style: TextStyle(
-                                              height: 1,
+                                              height: 1.1,//相当于padding
                                               wordSpacing: 0,
                                               fontSize: (i * 4 + index) == 20 || (i * 4 + index) == 24 ? 9 : 13,
                                               fontWeight: FontWeight.w400,
