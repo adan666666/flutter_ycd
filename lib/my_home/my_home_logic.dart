@@ -281,7 +281,7 @@ class MyHomeLogic extends GetxController {
             : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
     state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
 
-    state.totalValue[4] = "${double.parse(state.totalValue[0]) + zt_syz}"; //当前金额
+    state.totalValue[4] = (double.parse(state.totalValue[0]) + zt_syz).toStringAsFixed(2); //当前金额
 
     //局部
     int index = state.table1List.isEmpty ? 0 : int.parse(state.table1List.last.columnRestartIndex.toString()); //重启位置

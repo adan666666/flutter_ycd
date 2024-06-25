@@ -23,7 +23,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
         },
         child: Scaffold(
           floatingActionButton: GestureDetector(
-            onLongPress:() => controller.lockScreen(),
+            onLongPress: () => controller.lockScreen(),
             child: FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () => controller.setRandom((int _) => print(_)),
@@ -90,7 +90,45 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //   ),
                 // ),
                 //按钮功能区
-
+                Obx(() => Table(
+                      border: TableBorder(
+                        //在右上下的边框线
+                        // top: BorderSide(color: Colors.red),
+                        // left: BorderSide(color: Colors.red),
+                        // right: BorderSide(color: Colors.red),
+                        // bottom: BorderSide(color: Colors.red),
+                        //水平线
+                        horizontalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                        //垂直线
+                        verticalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                      ),
+                      //单元格的宽， map哪列 ：宽度
+                      columnWidths: const {
+                        // 0: IntrinsicColumnWidth(), //以那个最宽的作为该列的宽度
+                        0: FlexColumnWidth(1),
+                        1: IntrinsicColumnWidth(),
+                        2: IntrinsicColumnWidth(),
+                        3: FlexColumnWidth(1),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
+                      children: List.generate(
+                          8,
+                          (i) => TableRow(
+                              decoration: BoxDecoration(color: controller.state.bgColor),
+                              children: List.generate(
+                                  4,
+                                  (index) => Container(
+                                      alignment: Alignment.center,
+                                      color: controller.state.bgColor,
+                                      child: Text(
+                                          style: TextStyle(
+                                              height: 1,
+                                              wordSpacing: 0,
+                                              fontSize: (i * 4 + index) == 20 || (i * 4 + index) == 24 ? 9 : 13,
+                                              fontWeight: FontWeight.w400,
+                                              color: controller.state.textColor),
+                                          controller.state.totalValue[i * 4 + index]))).toList())).toList(),
+                    )),
                 SizedBox(
                   height: 35,
                   child: Row(
@@ -118,7 +156,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                   child: Obx(() => ColoredBox(
                         color: controller.state.listViewColor,
                         child: ListView.separated(
-                          padding: const EdgeInsets.only(left: 10,right: 5),
+                          padding: const EdgeInsets.only(left: 10, right: 5),
                           controller: controller.scrollController,
                           itemCount: controller.state.table2List.length,
                           itemBuilder: (BuildContext context, int index) => buildItem(index),
@@ -163,7 +201,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //序号
-            Container(color: Colors.transparent,width: 45, child: Text("${controller.state.table2List[index].table2Id + 1}")),
+            Container(color: Colors.transparent, width: 45, child: Text("${controller.state.table2List[index].table2Id + 1}")),
             //输赢
             Container(
               width: 80,
