@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:get/get.dart';
@@ -145,6 +146,10 @@ class MyHomeLogic extends GetxController {
   }
 
   add(int i, String tableName, {Table1Model? table1, Table2Model? table2}) {
+    // getDeviceId().then((value) {
+    //   print('测试=》${value}');
+    // });
+
     if (state.randomValue.isEmpty) {
       Get.snackbar("温馨提示", '请摇塞子', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
       return;
@@ -618,6 +623,7 @@ class MyHomeLogic extends GetxController {
           enabledColor: Colors.red,
         ),
       ),
+      title: const Icon(Icons.lock, size: 30, color: Colors.white),
       context: Get.context!,
       correctString: '1234',
       canCancel: false,
@@ -638,13 +644,35 @@ class MyHomeLogic extends GetxController {
     });
   }
 
-  getFuture(String input) => Future.delayed(const Duration(seconds: 1), () {
+  getFuture(String input) => Future.delayed(const Duration(milliseconds: 200), () {
         if (input.length == 4) {
           return true;
         } else {
           return false;
         }
       });
+
+  Future<String?> getDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      // deviceId = androidInfo.board;
+      // deviceId = androidInfo.hardware;//mt6762
+      // deviceId = androidInfo.product;//dandelion
+      // deviceId = androidInfo.tags;//release-keys
+      deviceId = androidInfo.device; //release-keys
+      print(androidInfo.toMap());
+      deviceId = androidInfo.device; //release-keys
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      // iOS没有设备ID的概念，但可以使用idfv来获取用户标识符
+      deviceId = iosInfo.identifierForVendor;
+    }
+
+    return deviceId;
+  }
 }
 
 String removeChineseCharacters(String input) {

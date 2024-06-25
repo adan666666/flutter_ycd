@@ -64,32 +64,33 @@ class MyHomePage extends GetView<MyHomeLogic> {
               children: <Widget>[
                 //图表区
                 buildChats(),
-                //列表区
-                ColoredBox(
-                  color: controller.state.lineColor,
-                  child: SizedBox(
-                    height: ((MediaQuery.of(context).size.width - 3) / 4) / MyState.height * 8 + 4,
-                    width: double.infinity,
-                    child: Obx(() => GridView.builder(
-                          gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 0.5,
-                            crossAxisSpacing: 0.5,
-                            childAspectRatio: MyState.height,
-                          ),
-                          itemCount: controller.state.totalValue.length,
-                          itemBuilder: (context, index) => Container(
-                            alignment: Alignment.center,
-                            color: controller.state.bgColor,
-                            child: ColoredBox(
-                                color: Colors.transparent,
-                                child: Text(controller.state.totalValue[index],
-                                    textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
-                          ),
-                        )),
-                  ),
-                ),
+                //表格区
+                // ColoredBox(
+                //   color: controller.state.lineColor,
+                //   child: SizedBox(
+                //     height: ((MediaQuery.of(context).size.width - 3) / 4) / MyState.height * 8 + 4,
+                //     width: double.infinity,
+                //     child: Obx(() => GridView.builder(
+                //           gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
+                //             crossAxisCount: 4,
+                //             mainAxisSpacing: 0.5,
+                //             crossAxisSpacing: 0.5,
+                //             childAspectRatio: MyState.height,
+                //           ),
+                //           itemCount: controller.state.totalValue.length,
+                //           itemBuilder: (context, index) => Container(
+                //             alignment: Alignment.center,
+                //             color: controller.state.bgColor,
+                //             child: ColoredBox(
+                //                 color: Colors.transparent,
+                //                 child: Text(controller.state.totalValue[index],
+                //                     textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
+                //           ),
+                //         )),
+                //   ),
+                // ),
                 //按钮功能区
+
                 SizedBox(
                   height: 35,
                   child: Row(

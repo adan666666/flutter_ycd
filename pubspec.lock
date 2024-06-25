@@ -49,6 +49,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  device_info_plus:
+    dependency: "direct main"
+    description:
+      name: device_info_plus
+      sha256: c31c5b2f60d2a7cff200e417946504715899abc2b09a779424ee7a8737f0cba4
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.5"
+  device_info_plus_linux:
+    dependency: transitive
+    description:
+      name: device_info_plus_linux
+      sha256: "3765e3551771ba8861a4a85c5754cc2fd4dac603db47e122d8038662f1f3f194"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
+  device_info_plus_macos:
+    dependency: transitive
+    description:
+      name: device_info_plus_macos
+      sha256: "49ed064fb29c02b1c9c2c9f7e44ed471e8dfe4bf2e4be15c2af6960ed5ee069f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
+  device_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_plus_platform_interface
+      sha256: "11cc890db4230005d7daa1f1112becc1be28e74b1a1b7e9e12e23664002ee1a9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  device_info_plus_web:
+    dependency: transitive
+    description:
+      name: device_info_plus_web
+      sha256: c5ae096e9d089d10dbb8e8d215b370ce2d249a596c54f46f5a227a8d2a1f402c
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
+  device_info_plus_windows:
+    dependency: transitive
+    description:
+      name: device_info_plus_windows
+      sha256: "908c966d946b563169387b6e12829f2fc1a22e7b302593584ff12a7ff444d4fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   fake_async:
     dependency: transitive
     description:
@@ -65,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  file:
+    dependency: transitive
+    description:
+      name: file
+      sha256: "1b92bec4fc2a72f59a8e15af5f52cd441e4a7860b49499d69dfa817af20e925d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.4"
   flutter:
     dependency: "direct main"
     description: flutter
