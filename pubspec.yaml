@@ -22,6 +22,8 @@ dependencies:
   wakelock: ^0.6.2
   flutter_screen_lock: ^9.1.0
   device_info_plus: ^5.0.5
+  flutterautotext:
+    git: https://github.com/LiuC520/flutterautotext.git
 dev_dependencies:
   flutter_test:
     sdk: flutter

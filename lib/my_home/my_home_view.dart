@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import '../my_widget/auto_text.dart';
 import 'my_home_logic.dart';
 import 'my_home_state.dart';
 
@@ -40,7 +41,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       color: Colors.white,
                     )),
                 GestureDetector(
-                    onTap: () => controller.showFunctionTypesAlert(),
+                    onTap: () => controller.showBottomFunction(),
                     child: const Icon(
                       Icons.edit,
                       size: 20,
@@ -51,7 +52,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 )
               ],
               elevation: 0,
-              toolbarHeight: 28,
+              toolbarHeight: 0,
               centerTitle: false,
               backgroundColor: controller.state.chartBgColor,
               title: Text(
@@ -90,44 +91,48 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //   ),
                 // ),
                 //按钮功能区
-                Obx(() => Table(
-                      border: TableBorder(
-                        //在右上下的边框线
-                        // top: BorderSide(color: Colors.red),
-                        // left: BorderSide(color: Colors.red),
-                        // right: BorderSide(color: Colors.red),
-                        // bottom: BorderSide(color: Colors.red),
-                        //水平线
-                        horizontalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
-                        //垂直线
-                        verticalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                Obx(() => GestureDetector(
+                      onLongPress: () => controller.showBottomFunction(),
+                      child: Table(
+                        border: TableBorder(
+                          //在右上下的边框线
+                          // top: BorderSide(color: Colors.red),
+                          // left: BorderSide(color: Colors.red),
+                          // right: BorderSide(color: Colors.red),
+                          // bottom: BorderSide(color: Colors.red),
+                          //水平线
+                          horizontalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                          //垂直线
+                          verticalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                        ),
+                        //单元格的宽， map哪列 ：宽度
+                        columnWidths: const {
+                          // 0: IntrinsicColumnWidth(), //以那个最宽的作为该列的宽度
+                          0: FlexColumnWidth(1),
+                          1: IntrinsicColumnWidth(),
+                          2: IntrinsicColumnWidth(),
+                          3: FlexColumnWidth(1),
+                        },
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
+                        children: List.generate(
+                            8,
+                            (i) => TableRow(
+                                decoration: BoxDecoration(color: controller.state.bgColor),
+                                children: List.generate(
+                                    4,
+                                    (index) => Container(
+                                        alignment: Alignment.center,
+                                        color: controller.state.bgColor,
+                                        child: Text(
+                                            style: TextStyle(
+                                                height: 1.1,
+                                                //相当于padding
+                                                wordSpacing: 0,
+                                                fontSize: (i * 4 + index) == 20 || (i * 4 + index) == 24 ? 9 : 13,
+                                                fontWeight: FontWeight.w300,
+                                                color: controller.state.textColor),
+                                            controller.state.totalValue[i * 4 + index]))).toList())).toList(),
                       ),
-                      //单元格的宽， map哪列 ：宽度
-                      columnWidths: const {
-                        // 0: IntrinsicColumnWidth(), //以那个最宽的作为该列的宽度
-                        0: FlexColumnWidth(1),
-                        1: IntrinsicColumnWidth(),
-                        2: IntrinsicColumnWidth(),
-                        3: FlexColumnWidth(1),
-                      },
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
-                      children: List.generate(
-                          8,
-                          (i) => TableRow(
-                              decoration: BoxDecoration(color: controller.state.bgColor),
-                              children: List.generate(
-                                  4,
-                                  (index) => Container(
-                                      alignment: Alignment.center,
-                                      color: controller.state.bgColor,
-                                      child: Text(
-                                          style: TextStyle(
-                                              height: 1.1,//相当于padding
-                                              wordSpacing: 0,
-                                              fontSize: (i * 4 + index) == 20 || (i * 4 + index) == 24 ? 9 : 13,
-                                              fontWeight: FontWeight.w400,
-                                              color: controller.state.textColor),
-                                          controller.state.totalValue[i * 4 + index]))).toList())).toList(),
                     )),
                 SizedBox(
                   height: 35,
@@ -153,15 +158,18 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 ),
                 //列表
                 Expanded(
-                  child: Obx(() => ColoredBox(
-                        color: controller.state.listViewColor,
-                        child: ListView.separated(
-                          padding: const EdgeInsets.only(left: 10, right: 5),
-                          controller: controller.scrollController,
-                          itemCount: controller.state.table2List.length,
-                          itemBuilder: (BuildContext context, int index) => buildItem(index),
-                          separatorBuilder: (BuildContext context, int index) =>
-                              Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.red : Colors.black),
+                  child: Obx(() => GestureDetector(
+                        onLongPress: () => controller.lockScreen(),
+                        child: ColoredBox(
+                          color: controller.state.listViewColor,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.only(left: 10, right: 5),
+                            controller: controller.scrollController,
+                            itemCount: controller.state.table2List.length,
+                            itemBuilder: (BuildContext context, int index) => buildItem(index),
+                            separatorBuilder: (BuildContext context, int index) =>
+                                Divider(height: 2, indent: 5, thickness: 0.3, color: index % 2 == 0 ? Colors.red : Colors.black),
+                          ),
                         ),
                       )),
                 ),
@@ -201,7 +209,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //序号
-            Container(color: Colors.transparent, width: 45, child: Text("${controller.state.table2List[index].table2Id + 1}")),
+            Container(
+                color: Colors.transparent, width: 45, alignment: Alignment.centerRight, child: Text("${controller.state.table2List[index].table2Id + 1}")),
             //输赢
             Container(
               width: 80,

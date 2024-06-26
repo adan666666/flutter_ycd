@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -54,7 +53,7 @@ class MyHomeLogic extends GetxController {
     );
   }
 
-  showFunctionTypesAlert() {
+  showBottomFunction() {
     focusNode.nextFocus();
     fixedExtentScrollController = FixedExtentScrollController(initialItem: state.selectIndex.value);
     Get.bottomSheet(const SinglePicker());
@@ -125,6 +124,7 @@ class MyHomeLogic extends GetxController {
       state.totalValue[30] = '闲';
       state.randomValue = '闲';
     }
+    Get.dialog(NewWidget(state.randomValue),barrierDismissible: false,barrierColor: Colors.black.withOpacity(0.18));
     state.isCanPress = true;
   }
 
@@ -200,7 +200,7 @@ class MyHomeLogic extends GetxController {
         }
         scrollController.jumpTo(scrollController.position.maxScrollExtent + 35);
         if (state.table2List.isNotEmpty) {
-          //计算
+          //统计区计算
           statisticalArea();
         } else {
           state.isCanPress = true;
@@ -245,6 +245,7 @@ class MyHomeLogic extends GetxController {
     var zt_syz = 0.0;
     var runningWater = 0.0;
     var countLianShengFu = 1;
+    var zCount = 0;
     var it = state.table2List;
     for (var index = 0; index < state.table2List.length; index++) {
       var element = state.table2List[index];
@@ -265,6 +266,8 @@ class MyHomeLogic extends GetxController {
           countLianShengFu = 1;
         }
       }
+      //庄个数
+      if(element.colmunZx=='庄')zCount++;
     }
     state.totalValue[5] = '$zt_y'; //胜
     state.totalValue[9] = '${(zt_y / double.parse(state.totalValue[1]) * 100).toStringAsFixed(2)}%'; //胜率
@@ -279,7 +282,10 @@ class MyHomeLogic extends GetxController {
         : zt_syz < 0
             ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x$parse'
             : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
-    state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //流水索引 重启位置
+    state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //重启位置
+    state.totalValue[8] = '${state.table1List.last.columnLiushuiIndex}'; //流水索引
+    state.totalValue[12] = '';
+    state.totalValue[16] = '';
 
     state.totalValue[4] = (double.parse(state.totalValue[0]) + zt_syz).toStringAsFixed(2); //当前金额
 
@@ -320,9 +326,10 @@ class MyHomeLogic extends GetxController {
                 : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x$parse';
 
     ///第四列
-    state.totalValue[3] = '流水$runningWater';
+    state.totalValue[3] = '流水${runningWater.toStringAsFixed(0)}';
     state.totalValue[7] = '均利${(zt_syz / state.table2List.length).toStringAsFixed(2)}';
-    state.totalValue[11] = '$countLianShengFu';
+    state.totalValue[11] = '连胜负$countLianShengFu';
+    state.totalValue[15] = '$zCount/${int.parse(state.totalValue[1])}';
     state.totalValue[23] = '${state.table1List.last.columnYongJin}'; //赔率
     state.totalValue[27] = state.totalValue[14] == '0'
         ? ""
@@ -616,12 +623,13 @@ class MyHomeLogic extends GetxController {
       secretsConfig: const SecretsConfig(
         spacing: 15, // or spacingRatio
         padding: EdgeInsets.all(40),
-        secretConfig: SecretConfig(
-          borderColor: Colors.red,
-          borderSize: 1.0,
-          disabledColor: Colors.black,
-          enabledColor: Colors.red,
-        ),
+        //输入密码框的配置
+        // secretConfig: SecretConfig(
+        //   borderColor: Colors.red,
+        //   borderSize: 1.0,
+        //   disabledColor: Colors.black,
+        //   enabledColor: Colors.red,
+        // ),
       ),
       title: const Icon(Icons.lock, size: 30, color: Colors.white),
       context: Get.context!,
@@ -672,6 +680,37 @@ class MyHomeLogic extends GetxController {
     }
 
     return deviceId;
+  }
+}
+
+class NewWidget extends StatefulWidget {
+  final String title;
+
+  const NewWidget(
+    this.title, {
+    super.key,
+  });
+
+  @override
+  State<NewWidget> createState() => _NewWidgetState();
+}
+
+class _NewWidgetState extends State<NewWidget> {
+  Timer? timer;
+  @override
+  Widget build(BuildContext context) {
+    timer ??= Timer.periodic(const Duration(milliseconds: 500), (timer) => setState(() => Get.back()));
+    return Center(
+      child: Text(
+        widget.title,
+        style: const TextStyle(fontSize: 90),
+      ),
+    );
+  }
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 }
 
