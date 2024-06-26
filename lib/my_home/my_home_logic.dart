@@ -124,7 +124,7 @@ class MyHomeLogic extends GetxController {
       state.totalValue[30] = '闲';
       state.randomValue = '闲';
     }
-    Get.dialog(NewWidget(state.randomValue),barrierDismissible: false,barrierColor: Colors.black.withOpacity(0.18));
+    Get.dialog(NewWidget(state.randomValue), barrierDismissible: false, barrierColor: Colors.black.withOpacity(0.18));
     state.isCanPress = true;
   }
 
@@ -198,7 +198,7 @@ class MyHomeLogic extends GetxController {
         for (var data in value) {
           state.table2List.add(Table2Model.fromJson(data));
         }
-        scrollController.jumpTo(scrollController.position.maxScrollExtent + 35);
+        if (state.table2List.length > 20) scrollController.jumpTo(scrollController.position.maxScrollExtent + 35);
         if (state.table2List.isNotEmpty) {
           //统计区计算
           statisticalArea();
@@ -267,7 +267,7 @@ class MyHomeLogic extends GetxController {
         }
       }
       //庄个数
-      if(element.colmunZx=='庄')zCount++;
+      if (element.colmunZx == '庄') zCount++;
     }
     state.totalValue[5] = '$zt_y'; //胜
     state.totalValue[9] = '${(zt_y / double.parse(state.totalValue[1]) * 100).toStringAsFixed(2)}%'; //胜率
@@ -697,6 +697,7 @@ class NewWidget extends StatefulWidget {
 
 class _NewWidgetState extends State<NewWidget> {
   Timer? timer;
+
   @override
   Widget build(BuildContext context) {
     timer ??= Timer.periodic(const Duration(milliseconds: 500), (timer) => setState(() => Get.back()));
@@ -707,6 +708,7 @@ class _NewWidgetState extends State<NewWidget> {
       ),
     );
   }
+
   @override
   void dispose() {
     timer?.cancel();

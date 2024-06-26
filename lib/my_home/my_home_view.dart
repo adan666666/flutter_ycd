@@ -107,11 +107,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
                         ),
                         //单元格的宽， map哪列 ：宽度
                         columnWidths: const {
-                          // 0: IntrinsicColumnWidth(), //以那个最宽的作为该列的宽度
-                          0: FlexColumnWidth(1),
-                          1: IntrinsicColumnWidth(),
-                          2: IntrinsicColumnWidth(),
-                          3: FlexColumnWidth(1),
+                          1: FlexColumnWidth(1),
+                          0: IntrinsicColumnWidth(), //包裹内容
+                          3: IntrinsicColumnWidth(),
+                          2: FlexColumnWidth(1),
                         },
                         defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
                         children: List.generate(
@@ -120,18 +119,18 @@ class MyHomePage extends GetView<MyHomeLogic> {
                                 decoration: BoxDecoration(color: controller.state.bgColor),
                                 children: List.generate(
                                     4,
-                                    (index) => Container(
-                                        alignment: Alignment.center,
-                                        color: controller.state.bgColor,
-                                        child: Text(
-                                            style: TextStyle(
-                                                height: 1.1,
-                                                //相当于padding
-                                                wordSpacing: 0,
-                                                fontSize: (i * 4 + index) == 20 || (i * 4 + index) == 24 ? 9 : 13,
-                                                fontWeight: FontWeight.w300,
-                                                color: controller.state.textColor),
-                                            controller.state.totalValue[i * 4 + index]))).toList())).toList(),
+                                    (index) => Center(
+                                          child: Text(
+                                              style: TextStyle(
+                                                  height: 1.1,
+                                                  //相当于padding
+                                                  wordSpacing: 0,
+                                                  fontSize:
+                                                      (i * 4 + index) == 3 || (i * 4 + index) == 20 || (i * 4 + index) == 24 || (i * 4 + index) == 16 ? 10 : 13,
+                                                  fontWeight: FontWeight.w300,
+                                                  color: controller.state.textColor),
+                                              controller.state.totalValue[i * 4 + index]),
+                                        )).toList())).toList(),
                       ),
                     )),
                 SizedBox(
@@ -163,7 +162,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                         child: ColoredBox(
                           color: controller.state.listViewColor,
                           child: ListView.separated(
-                            padding: const EdgeInsets.only(left: 10, right: 5),
+                            padding: const EdgeInsets.only(left: 6, right: 2),
                             controller: controller.scrollController,
                             itemCount: controller.state.table2List.length,
                             itemBuilder: (BuildContext context, int index) => buildItem(index),
@@ -210,7 +209,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
           children: [
             //序号
             Container(
-                color: Colors.transparent, width: 45, alignment: Alignment.centerRight, child: Text("${controller.state.table2List[index].table2Id + 1}")),
+              width: 45,
+              alignment: Alignment.centerRight,
+              child: Text("${controller.state.table2List[index].table2Id + 1}"),
+            ),
             //输赢
             Container(
               width: 80,
@@ -223,9 +225,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
               ),
             ),
             //消数
-            Container(
+            SizedBox(
                 width: 110,
-                color: Colors.transparent,
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                   Text(
                     "${controller.state.table2List[index].colmunShuyingzhiD}",
@@ -247,29 +248,30 @@ class MyHomePage extends GetView<MyHomeLogic> {
             Container(
               width: 55,
               alignment: Alignment.centerRight,
-              color: Colors.transparent,
               child: Text("${controller.state.table2List[index].columnXiazhujine}"),
             ),
             //胜负路
-            SflContainer(index),
+            sflContainer(index),
           ],
         ),
       );
 
-  Container SflContainer(int index) => controller.state.table2List[index].colmunShengfulu == '正打'
+  Container sflContainer(int index) => controller.state.table2List[index].colmunShengfulu == '正打'
       ? (controller.state.table2List[index].colmunRemark!.startsWith('-')
           ? Container(
               color: Colors.transparent,
-              width: 40,
+              width: 50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   divier(Colors.grey.withOpacity(0.5), 15),
+                  const SizedBox(width: 2),
                   const Text("1", style: TextStyle(color: Colors.green)),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 8),
                   divier(Colors.grey.withOpacity(0.5), 15),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 8),
                   const Text("1", style: TextStyle(color: Colors.green)),
+                  const SizedBox(width: 2),
                   divier(Colors.grey.withOpacity(0.5), 15),
                 ],
               ),
@@ -438,7 +440,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
     );
   }
 
-  Container divier(Color color, double height) => Container(height: height, width: 1, color: Colors.transparent);
+  Container divier(Color color, double height) => Container(height: height, width: 1, color: color);
 
   Container divier2(Color color, double height) => Container(height: height, width: 5, color: Colors.transparent);
 
