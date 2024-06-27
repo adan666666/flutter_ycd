@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
@@ -184,7 +185,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       autofocus: false,
                       controller: controller.textEditingController,
                       onChanged: (value) {},
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      ignorePointers: false,//是否可以用虚拟键盘
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],//限制只能输入数字
+                      textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
                         icon: Icon(CupertinoIcons.ant_fill),
                         contentPadding: EdgeInsets.only(bottom: 7),
@@ -287,7 +291,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
             )
           : Container(
               color: Colors.transparent,
-              width: 40,
+              width: 50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -304,7 +308,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
       : controller.state.table2List[index].colmunRemark!.startsWith('-')
           ? Container(
               color: Colors.transparent,
-              width: 40,
+              width: 50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -320,7 +324,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
             )
           : Container(
               color: Colors.transparent,
-              width: 40,
+              width: 50,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

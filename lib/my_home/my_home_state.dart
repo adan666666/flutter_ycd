@@ -29,7 +29,7 @@ class MyState {
   var table2List = <Table2Model>[].obs;
 
   var selectIndex=2.obs;
-  var functionTypes = ['排列数据', '消除数据', '修改本金', '修改位置', '删除本页', '重置流水', '备份数据','重启系统','修改期望值','恢复数据'].obs;
+  var functionTypes = ['1.排列数据', '2.消除数据', '3.修改本金', '4.修改位置', '5.删除本页', '6.重置流水', '7.备份数据','8.重启系统','9.修改期望值','10.恢复数据','11.修改赔率'].obs;
 }
 
 class SalesData {
