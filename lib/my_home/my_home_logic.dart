@@ -686,7 +686,7 @@ class MyHomeLogic extends GetxController {
   }
 
   getFuture(String input) => Future.delayed(const Duration(milliseconds: 200), () {
-        if (input.length == 4) {
+        if (input.length == 4 && input == "0000") {
           return true;
         } else {
           return false;
