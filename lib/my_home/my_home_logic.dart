@@ -689,6 +689,7 @@ class MyHomeLogic extends GetxController {
         if (input.length == 4 && input == "0000") {
           return true;
         } else {
+          Loading.showError(toast: '密码错误');
           return false;
         }
       });
