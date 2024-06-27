@@ -40,7 +40,7 @@ class MyHomeLogic extends GetxController {
 
     queryAll();
     textEditingController.addListener(
-      () {
+          () {
         state.bettingMoney = textEditingController.text;
         if (textEditingController.text.isNotEmpty) {
           ///总体
@@ -51,6 +51,7 @@ class MyHomeLogic extends GetxController {
         }
       },
     );
+    Future.delayed(const Duration(microseconds: 200), () => lockScreen());
   }
 
   showBottomFunction() {
@@ -151,20 +152,24 @@ class MyHomeLogic extends GetxController {
     // });
 
     if (state.randomValue.isEmpty) {
-      Get.snackbar("温馨提示", '请摇塞子', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
+      Get.snackbar(
+          "温馨提示", '请摇塞子', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
       return;
     }
 
     if (state.bettingMoney.isEmpty) {
-      Get.snackbar("温馨提示", '请输入下注金额', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
+      Get.snackbar(
+          "温馨提示", '请输入下注金额', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
       return;
     }
     if (!state.bettingMoney.isNum) {
-      Get.snackbar("温馨提示", '请输入数字', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
+      Get.snackbar(
+          "温馨提示", '请输入数字', duration: const Duration(seconds: 2), snackPosition: SnackPosition.TOP, backgroundColor: Colors.white.withOpacity(0.7));
       return;
     }
     if (!state.isCanPress) {
-      Get.snackbar("温馨提示", '速度太快', duration: const Duration(seconds: 2), snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white.withOpacity(0.7));
+      Get.snackbar(
+          "温馨提示", '速度太快', duration: const Duration(seconds: 2), snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white.withOpacity(0.7));
       return;
     }
     Loading.show();
@@ -173,20 +178,25 @@ class MyHomeLogic extends GetxController {
     state.totalValue[28] = "${state.js1}/${state.js2}";
     final table = tableName == 'table2'
         ? Table2Model(
-            table2Id: state.table2List.length,
-            columnXiazhujine: state.bettingMoney,
-            colmunZx: state.randomValue,
-            //输（-） 赢 （+）
-            colmunRemark: (i == 1 || i == 2) ? "1" : "-1",
-            colmunShengfulu: ((i == 1 || i == 3) && (state.randomValue == '闲')) || ((i == 2 || i == 4) && (state.randomValue == '庄')) ? "正打" : "反打",
-            colmunShuyingzhi: syzL(i),
-            colmunShuyingzhiD: syzL(i),
-            columnCurrentJin: getCurrentJin(i, double.parse(state.bettingMoney)).toString(),
-          )
-        : Table1Model(columnBenjin: "10000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "10");
+      table2Id: state.table2List.length,
+      columnXiazhujine: state.bettingMoney,
+      colmunZx: state.randomValue,
+      //输（-） 赢 （+）
+      colmunRemark: (i == 1 || i == 2) ? "1" : "-1",
+      colmunShengfulu: ((i == 1 || i == 3) && (state.randomValue == '闲')) || ((i == 2 || i == 4) && (state.randomValue == '庄')) ? "正打" : "反打",
+      colmunShuyingzhi: syzL(i),
+      colmunShuyingzhiD: syzL(i),
+      columnCurrentJin: getCurrentJin(i, double.parse(state.bettingMoney)).toString(),
+    )
+        : Table1Model(columnBenjin: "10000",
+        columnYongJin: "0.95",
+        columnMean: "0.08",
+        columnRestartIndex: "0",
+        columnLiushuiIndex: "10");
 
     _instance
-        ?.then((value) => value.insert(tableName == 'table1' ? DbHelper.table1 : DbHelper.table2,
+        ?.then((value) =>
+        value.insert(tableName == 'table1' ? DbHelper.table1 : DbHelper.table2,
             tableName == 'table1' ? (table as Table1Model).toJson() : (table as Table2Model).toJson()))
         .then((value) => queryAll());
   }
@@ -274,14 +284,14 @@ class MyHomeLogic extends GetxController {
     state.totalValue[13] = '${zt_y.abs() - zt_s.abs()}'; //净胜~须多少手回到50%
     state.totalValue[17] = zt_syz.toStringAsFixed(3); //一共输赢多少钱
     state.totalValue[21] =
-        state.totalValue[13] == '0' ? '-' : (zt_syz / double.parse(removeChineseCharacters(state.totalValue[13])).abs()).toStringAsFixed(2); //平均赢
+    state.totalValue[13] == '0' ? '-' : (zt_syz / double.parse(removeChineseCharacters(state.totalValue[13])).abs()).toStringAsFixed(2); //平均赢
     var d = (double.parse(state.totalValue[1]) + 1) * double.parse(state.totalValue[19]); //期望一共的值
     var parse = int.parse(state.totalValue[13]).abs();
     state.totalValue[25] = state.totalValue[13] == '0'
         ? '-'
         : zt_syz < 0
-            ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x$parse'
-            : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
+        ? '须${((zt_syz.abs() + d) / parse).toStringAsFixed(1)}x$parse'
+        : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
     state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //重启位置
     state.totalValue[8] = '${state.table1List.last.columnLiushuiIndex}'; //流水索引
     state.totalValue[12] = '';
@@ -290,7 +300,11 @@ class MyHomeLogic extends GetxController {
     state.totalValue[4] = (double.parse(state.totalValue[0]) + zt_syz).toStringAsFixed(2); //当前金额
 
     //局部
-    int index = state.table1List.isEmpty ? 0 : int.parse(state.table1List.last.columnRestartIndex.toString()); //重启位置
+    int index = state.currentTempIndex != 0
+        ? state.currentTempIndex
+        : state.table1List.isEmpty
+        ? 0
+        : int.parse(state.table1List.last.columnRestartIndex.toString()); //重启位置
     state.totalValue[2] = '${state.table2List.length - index}'; //一共打多少手
     var jb_y = 0;
     var jb_s = 0;
@@ -312,18 +326,18 @@ class MyHomeLogic extends GetxController {
     state.totalValue[14] = '${jb_y.abs() - jb_s.abs()}'; //净胜~须多少手回到50%
     state.totalValue[18] = jb_syz.toStringAsFixed(3); //一共输赢多少钱
     state.totalValue[22] =
-        state.totalValue[14] == '0' ? "-" : (jb_syz / double.parse(removeChineseCharacters(state.totalValue[14])).abs()).toStringAsFixed(3); //平均赢
+    state.totalValue[14] == '0' ? "-" : (jb_syz / double.parse(removeChineseCharacters(state.totalValue[14])).abs()).toStringAsFixed(3); //平均赢
     var dJ = (jb_count + 1) * double.parse(state.totalValue[19]); //期望一共的值
     parse = int.parse(state.totalValue[14]).abs();
     state.totalValue[26] = state.totalValue[14] == '0'
         ? "-"
         : jb_syz < 0
-            ? parse == 0
-                ? ''
-                : '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x$parse'
-            : parse == 0
-                ? ''
-                : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x$parse';
+        ? parse == 0
+        ? ''
+        : '须${((jb_syz.abs() + dJ) / parse).toStringAsFixed(1)}x$parse'
+        : parse == 0
+        ? ''
+        : '可负${((jb_syz.abs() - dJ) / parse).toStringAsFixed(1)}x$parse';
 
     ///第四列
     state.totalValue[3] = '流水${runningWater.toStringAsFixed(0)}';
@@ -334,13 +348,13 @@ class MyHomeLogic extends GetxController {
     state.totalValue[27] = state.totalValue[14] == '0'
         ? ""
         : state.totalValue[21] == '-'
-            ? ""
-            : (double.parse(removeChineseCharacters(state.totalValue[25].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
+        ? ""
+        : (double.parse(removeChineseCharacters(state.totalValue[25].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2); //打庄需要
     state.totalValue[31] = state.totalValue[14] == '0'
         ? ""
         : state.totalValue[22] == '-'
-            ? ""
-            : (double.parse(removeChineseCharacters(state.totalValue[26].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2);
+        ? ""
+        : (double.parse(removeChineseCharacters(state.totalValue[26].split("x")[0])) / double.parse(state.totalValue[23])).toStringAsFixed(2);
 
     //预测平均值
     if (textEditingController.text.isNotEmpty) {
@@ -391,21 +405,26 @@ class MyHomeLogic extends GetxController {
   }
 
   void updateSqlite(int index) {
-    _instance?.then((db) => db.update(DbHelper.table2, state.table2List[index].toJson()..update("colmun_shuyingzhi_d", (value) => "") /*具体更新的数据*/,
-        where: "table2Id =?", //通过id查找需要更新的数据
-        whereArgs: [index])).then((value) => _queryAllTable2());
+    _instance?.then((db) =>
+        db.update(DbHelper.table2, state.table2List[index].toJson()
+          ..update("colmun_shuyingzhi_d", (value) => "") /*具体更新的数据*/,
+            where: "table2Id =?", //通过id查找需要更新的数据
+            whereArgs: [index])).then((value) => _queryAllTable2());
   }
 
   void reStart() {
     // valueC.last..update('column_restart_index', (value) => "${state.table2List.length - 1}")
-    _instance?.then((_db) => _db.query(DbHelper.table1).then((value) => _instance?.then((db) {
-          //重启时，清除消数列数据
-          for (int i = 0; i < state.table2List.length; i++) {
-            db.update(DbHelper.table2, state.table2List[i].toJson()..update('colmun_shuyingzhi_d', (value) => ''),
-                where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
-          }
-          return db
-              .insert(
+    _instance?.then((_db) =>
+        _db.query(DbHelper.table1).then((value) =>
+            _instance?.then((db) {
+              //重启时，清除消数列数据
+              for (int i = 0; i < state.table2List.length; i++) {
+                db.update(DbHelper.table2, state.table2List[i].toJson()
+                  ..update('colmun_shuyingzhi_d', (value) => ''),
+                    where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
+              }
+              return db
+                  .insert(
                   DbHelper.table1,
                   Table1Model(
                     columnBenjin: value.last['column_benjin'].toString(),
@@ -414,22 +433,25 @@ class MyHomeLogic extends GetxController {
                     columnRestartIndex: "${state.table2List.length}",
                     columnLiushuiIndex: value.last['column_liushui_index'].toString(),
                   ).toJson())
-              .then((value) => queryAll());
-        })));
+                  .then((value) => queryAll());
+            })));
   }
 
   void updateBenJin(String b) {
-    _instance?.then((db) => db.query(DbHelper.table1).then((value) => _instance?.then((db) => db
-        .insert(
-            DbHelper.table1,
-            Table1Model(
-              columnBenjin: b,
-              columnYongJin: value.last['column_yongJin'].toString(),
-              columnMean: value.last['column_mean'].toString(),
-              columnRestartIndex: value.last['column_restart_index'].toString(),
-              columnLiushuiIndex: value.last['column_liushui_index'].toString(),
-            ).toJson())
-        .then((value) => queryAll()))));
+    _instance?.then((db) =>
+        db.query(DbHelper.table1).then((value) =>
+            _instance?.then((db) =>
+                db
+                    .insert(
+                    DbHelper.table1,
+                    Table1Model(
+                      columnBenjin: b,
+                      columnYongJin: value.last['column_yongJin'].toString(),
+                      columnMean: value.last['column_mean'].toString(),
+                      columnRestartIndex: value.last['column_restart_index'].toString(),
+                      columnLiushuiIndex: value.last['column_liushui_index'].toString(),
+                    ).toJson())
+                    .then((value) => queryAll()))));
   }
 
   Future<void> functionConfirm(int i) async {
@@ -437,9 +459,12 @@ class MyHomeLogic extends GetxController {
       case 0: //排序
         Loading.show();
         var list =
-            state.table2List.map((element) => element.colmunShuyingzhiD.toString().isEmpty ? 0.0 : double.parse(element.colmunShuyingzhiD.toString())).toList()
-              ..removeWhere((element) => element == 0.0)
-              ..sort();
+        state.table2List.map((element) =>
+        element.colmunShuyingzhiD
+            .toString()
+            .isEmpty ? 0.0 : double.parse(element.colmunShuyingzhiD.toString())).toList()
+          ..removeWhere((element) => element == 0.0)
+          ..sort();
         _instance?.then((db) {
           var x = 0;
           for (int i = state.table2List.length - 1; i >= state.table2List.length - list.length; i--) {
@@ -447,7 +472,8 @@ class MyHomeLogic extends GetxController {
             if (x > list.length) {
               break;
             }
-            db.update(DbHelper.table2, state.table2List[i].toJson()..update('colmun_shuyingzhi_d', (value) => '${list[list.length - x]}'),
+            db.update(DbHelper.table2, state.table2List[i].toJson()
+              ..update('colmun_shuyingzhi_d', (value) => '${list[list.length - x]}'),
                 where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
           }
         }).then((value) => _queryAllTable2());
@@ -457,18 +483,23 @@ class MyHomeLogic extends GetxController {
         _instance?.then((db) {
           for (int i = 0; i < state.table2List.length; i++) {
             if (state.table2List[i].colmunShuyingzhiD!.isEmpty) continue;
-            db.update(DbHelper.table2, state.table2List[i].toJson()..update('colmun_shuyingzhi_d', (value) => ''),
+            db.update(DbHelper.table2, state.table2List[i].toJson()
+              ..update('colmun_shuyingzhi_d', (value) => ''),
                 where: 'table2Id =?', whereArgs: [state.table2List[i].table2Id]);
           }
         }).then((value) => queryAll());
         break;
       case 2:
         Loading.show();
-        if (textEditingController.text.toString().isEmpty) {
+        if (textEditingController.text
+            .toString()
+            .isEmpty) {
           Loading.showToast(toast: '请输入金额 ${textEditingController.text} ');
           break;
         }
-        if (!textEditingController.text.toString().isNum) {
+        if (!textEditingController.text
+            .toString()
+            .isNum) {
           Loading.showToast(toast: '请输入数字 ${textEditingController.text} ');
           break;
         }
@@ -482,6 +513,7 @@ class MyHomeLogic extends GetxController {
         break;
       case 4: //删除本页
         Loading.show();
+        state.currentTempIndex = 0;
         _instance?.then((db) {
           db.rawQuery('DELETE FROM ${DbHelper.table1}');
           return db.rawQuery('DELETE FROM ${DbHelper.table2}');
@@ -517,11 +549,15 @@ class MyHomeLogic extends GetxController {
         );
         break;
       case 8: //修改期望值
-        if (textEditingController.text.toString().isEmpty) {
+        if (textEditingController.text
+            .toString()
+            .isEmpty) {
           Loading.showToast(toast: '请输入期望值 ${textEditingController.text} ');
           break;
         }
-        if (!textEditingController.text.toString().isNum) {
+        if (!textEditingController.text
+            .toString()
+            .isNum) {
           Loading.showToast(toast: '请输入数字 ${textEditingController.text} ');
           break;
         }
@@ -539,23 +575,31 @@ class MyHomeLogic extends GetxController {
     state.randomValue = '';
     List.generate(32, (index) => state.totalValue[index] = index.toString());
     _instance
-        ?.then((db) => db.insert(DbHelper.table1,
-            Table1Model(columnBenjin: "5000", columnYongJin: "0.95", columnMean: "0.08", columnRestartIndex: "0", columnLiushuiIndex: "0").toJson()))
+        ?.then((db) =>
+        db.insert(DbHelper.table1,
+            Table1Model(columnBenjin: "5000",
+                columnYongJin: "0.95",
+                columnMean: "0.08",
+                columnRestartIndex: "0",
+                columnLiushuiIndex: "0").toJson()))
         .then((value) => Loading.dismiss());
   }
 
   void updateQiWangZhi(String qiwangzhi) {
-    _instance?.then((db) => db.query(DbHelper.table1).then((value) => _instance?.then((db) => db
-        .insert(
-            DbHelper.table1,
-            Table1Model(
-              columnBenjin: value.last['column_benjin'].toString(),
-              columnYongJin: value.last['column_yongJin'].toString(),
-              columnMean: qiwangzhi,
-              columnRestartIndex: value.last['column_restart_index'].toString(),
-              columnLiushuiIndex: value.last['column_liushui_index'].toString(),
-            ).toJson())
-        .then((value) => queryAll()))));
+    _instance?.then((db) =>
+        db.query(DbHelper.table1).then((value) =>
+            _instance?.then((db) =>
+                db
+                    .insert(
+                    DbHelper.table1,
+                    Table1Model(
+                      columnBenjin: value.last['column_benjin'].toString(),
+                      columnYongJin: value.last['column_yongJin'].toString(),
+                      columnMean: qiwangzhi,
+                      columnRestartIndex: value.last['column_restart_index'].toString(),
+                      columnLiushuiIndex: value.last['column_liushui_index'].toString(),
+                    ).toJson())
+                    .then((value) => queryAll()))));
   }
 
   /**
@@ -652,7 +696,8 @@ class MyHomeLogic extends GetxController {
     });
   }
 
-  getFuture(String input) => Future.delayed(const Duration(milliseconds: 200), () {
+  getFuture(String input) =>
+      Future.delayed(const Duration(milliseconds: 200), () {
         if (input.length == 4) {
           return true;
         } else {
@@ -681,13 +726,17 @@ class MyHomeLogic extends GetxController {
 
     return deviceId;
   }
+
+  juBuPingHeng(int index) {
+    state.currentTempIndex = index;
+    if (state.table2List.isNotEmpty) statisticalArea();
+  }
 }
 
 class NewWidget extends StatefulWidget {
   final String title;
 
-  const NewWidget(
-    this.title, {
+  const NewWidget(this.title, {
     super.key,
   });
 

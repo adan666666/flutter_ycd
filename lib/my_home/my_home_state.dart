@@ -14,6 +14,7 @@ class MyState {
   var bettingMoney = '';
   var js1 = 0;
   var js2 = 0;
+  int currentTempIndex=0;
   var lineColor = Colors.black87.withOpacity(0.8);
   var listViewColor = const Color(0xFFE9EEDB);
   var bgColor = const Color(0xFFE9EEDB);

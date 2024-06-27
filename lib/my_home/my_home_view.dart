@@ -93,6 +93,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //按钮功能区
                 Obx(() => GestureDetector(
                       onLongPress: () => controller.showBottomFunction(),
+                      onTap: () =>controller.juBuPingHeng(0),
                       child: Table(
                         border: TableBorder(
                           //在右上下的边框线
@@ -125,10 +126,11 @@ class MyHomePage extends GetView<MyHomeLogic> {
                                                   height: 1.1,
                                                   //相当于padding
                                                   wordSpacing: 0,
-                                                  fontSize:
-                                                      (i * 4 + index) == 3 || (i * 4 + index) == 20 || (i * 4 + index) == 24 || (i * 4 + index) == 16 ? 10 : 13,
+                                                  fontSize: fontSize(i, index),
                                                   fontWeight: FontWeight.w300,
-                                                  color: controller.state.textColor),
+                                                  color: (i * 4 + index) == 2 && controller.state.currentTempIndex != 0
+                                                      ? Colors.purpleAccent
+                                                      : controller.state.textColor),
                                               controller.state.totalValue[i * 4 + index]),
                                         )).toList())).toList(),
                       ),
@@ -203,15 +205,22 @@ class MyHomePage extends GetView<MyHomeLogic> {
     );
   }
 
+  double fontSize(int i, int index) =>
+      (i * 4 + index) == 15 || (i * 4 + index) == 3 || (i * 4 + index) == 20 || (i * 4 + index) == 24 || (i * 4 + index) == 16 ? 10 : 13;
+
   buildItem(int index) => SizedBox(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             //序号
-            Container(
-              width: 45,
-              alignment: Alignment.centerRight,
-              child: Text("${controller.state.table2List[index].table2Id + 1}"),
+            GestureDetector(
+              onTap: () => controller.juBuPingHeng(index),
+              child: Container(
+                color: controller.state.bgColor,
+                width: 45,
+                alignment: Alignment.centerRight,
+                child: Text("${controller.state.table2List[index].table2Id + 1}"),
+              ),
             ),
             //输赢
             Container(
