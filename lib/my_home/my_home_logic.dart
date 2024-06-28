@@ -248,9 +248,12 @@ class MyHomeLogic extends GetxController {
     var countLianShengFu = 1;
     var zCount = 0;
     var it = state.table2List;
+    var benUse1 = state.table2List.isNotEmpty ? int.parse(state.table2List.first.columnXiazhujine.toString()) : 0;
     for (var index = 0; index < state.table2List.length; index++) {
       var element = state.table2List[index];
       zt_syz += double.parse(element.colmunShuyingzhi.toString());
+      if (zt_syz < 0 && zt_syz < benUse1) benUse1 = zt_syz.toInt();
+
       runningWater += double.parse(element.columnXiazhujine.toString());
       if (element.colmunRemark!.startsWith("-1")) {
         zt_s--;
@@ -285,7 +288,7 @@ class MyHomeLogic extends GetxController {
             : '可负${((zt_syz.abs() - d) / parse).toStringAsFixed(1)}x$parse'; //还需，可负
     state.totalValue[29] = '${state.table1List.last.columnRestartIndex}'; //重启位置
     state.totalValue[8] = '${state.table1List.last.columnLiushuiIndex}'; //流水索引
-    state.totalValue[12] = '';
+    state.totalValue[12] = '${benUse1.abs()}';//本金使用
     state.totalValue[16] = '';
 
     state.totalValue[4] = (double.parse(state.totalValue[0]) + zt_syz).toStringAsFixed(2); //当前金额
