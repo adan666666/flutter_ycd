@@ -383,7 +383,7 @@ class MyHomeLogic extends GetxController {
         return state.bettingMoney;
       case 2: //庄赢
         double parse = double.parse(state.bettingMoney);
-        var xx = parse * double.parse(state.totalValue[23]);
+        var xx = parse * double.parse(state.totalValue[23].contains('.')?state.totalValue[23]:'0.95');
         String syz /*庄赢值*/ = xx.toStringAsFixed(2); //四舍五入保留两位小数
         return syz;
       case 3:

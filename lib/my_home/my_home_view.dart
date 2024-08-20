@@ -94,7 +94,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //按钮功能区
                 Obx(() => GestureDetector(
                       onLongPress: () => controller.showBottomFunction(),
-                      onTap: () =>controller.juBuPingHeng(0),
+                      onTap: () => controller.juBuPingHeng(0),
                       child: Table(
                         border: TableBorder(
                           //在右上下的边框线
@@ -187,7 +187,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       onChanged: (value) {},
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       // ignorePointers: false,//是否可以用虚拟键盘
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],//限制只能输入数字
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      //限制只能输入数字
                       textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
                         icon: Icon(CupertinoIcons.ant_fill),
@@ -210,7 +211,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
   }
 
   double fontSize(int i, int index) =>
-      (i * 4 + index) == 15 || (i * 4 + index) == 3 || (i * 4 + index) == 20 || (i * 4 + index) == 24 || (i * 4 + index) == 16 ? 10 : 13;
+      (i * 4 + index) == 15 || (i * 4 + index) == 3 || (i * 4 + index) == 20 || (i * 4 + index) == 24 || (i * 4 + index) == 16 ? 10 : 14;
 
   buildItem(int index) => SizedBox(
         child: Row(
