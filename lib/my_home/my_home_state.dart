@@ -12,7 +12,7 @@ class MyState {
   var isCanPress = true;
   var randomValue = ''; //随机的出来的庄闲
   var bettingMoney = '';
-  var js1 = 0;
+  var js1 = 0;//随机总数
   var js2 = 0;
   int currentTempIndex=0;
   var lineColor = Colors.black87.withOpacity(0.8);
@@ -28,7 +28,7 @@ class MyState {
   var table1List = <Table1Model>[].obs;
   var table2List = <Table2Model>[].obs;
 
-  var selectIndex=2.obs;
+  var selectIndex=7.obs;
   var functionTypes = ['1.排列数据', '2.消除数据', '3.修改本金', '4.修改位置', '5.删除本页', '6.重置流水', '7.备份数据','8.重启系统','9.修改期望值','10.恢复数据','11.修改赔率'].obs;
 }
 

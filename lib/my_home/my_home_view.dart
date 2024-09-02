@@ -24,6 +24,7 @@ class MyHomePage extends GetView<MyHomeLogic> {
           controller.onUserInteraction();
         },
         child: Scaffold(
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           floatingActionButton: GestureDetector(
             onLongPress: () => controller.lockScreen(),
             child: FloatingActionButton(

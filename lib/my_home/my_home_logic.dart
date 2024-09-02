@@ -395,6 +395,8 @@ class MyHomeLogic extends GetxController {
   void deleteLast() {
     if (state.table2List.isNotEmpty) {
       _instance?.then((db) => db.delete(DbHelper.table2, where: 'table2Id =?', whereArgs: [state.table2List.last.table2Id]).then((value) => queryAll()));
+      state.js1 = state.js1 - 1;
+      state.totalValue[28] = "${state.js1}/${state.js2}";
     }
   }
 
