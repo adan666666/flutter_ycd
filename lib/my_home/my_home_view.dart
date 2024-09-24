@@ -189,7 +189,8 @@ class MyHomePage extends GetView<MyHomeLogic> {
                       onChanged: (value) {},
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       // ignorePointers: false,//是否可以用虚拟键盘
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      //过滤（仅只能输入数字，不能小数点.）
+                      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       //限制只能输入数字
                       textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
