@@ -68,61 +68,61 @@ class MyHomePage extends GetView<MyHomeLogic> {
                 //图表区
                 buildChats(),
                 //表格区
-                // ColoredBox(
-                //   color: controller.state.lineColor,
-                //   child: SizedBox(
-                //     height: ((MediaQuery.of(context).size.width - 3) / 4) / MyState.height * 8 + 4,
-                //     width: double.infinity,
-                //     child: Obx(() => GridView.builder(
-                //           gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
-                //             crossAxisCount: 4,
-                //             mainAxisSpacing: 0.5,
-                //             crossAxisSpacing: 0.5,
-                //             childAspectRatio: MyState.height,
-                //           ),
-                //           itemCount: controller.state.totalValue.length,
-                //           itemBuilder: (context, index) => Container(
-                //             alignment: Alignment.center,
-                //             color: controller.state.bgColor,
-                //             child: ColoredBox(
-                //                 color: Colors.transparent,
-                //                 child: Text(controller.state.totalValue[index],
-                //                     textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
-                //           ),
-                //         )),
-                //   ),
-                // ),
-                //按钮功能区
-                Obx(() => GestureDetector(
-                      onLongPress: () => controller.showBottomFunction(),
-                      onTap: () => controller.juBuPingHeng(0),
-                      child: Table(
-                        border: TableBorder(
-                          //在右上下的边框线
-                          // top: BorderSide(color: Colors.red),
-                          // left: BorderSide(color: Colors.red),
-                          // right: BorderSide(color: Colors.red),
-                          // bottom: BorderSide(color: Colors.red),
-                          //水平线
-                          horizontalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
-                          //垂直线
-                          verticalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
-                        ),
-                        //单元格的宽， map哪列 ：宽度
-                        columnWidths: const {
-                          1: FlexColumnWidth(1),
-                          0: IntrinsicColumnWidth(), //包裹内容
-                          3: IntrinsicColumnWidth(),
-                          2: FlexColumnWidth(1),
-                        },
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
-                        children: List.generate(
-                            8,
-                            (i) => TableRow(
-                                decoration: BoxDecoration(color: controller.state.bgColor),
-                                children: List.generate(
-                                    4,
-                                    (index) => Center(
+                /* ColoredBox(
+                  color: controller.state.lineColor,
+                  child: SizedBox(
+                    height: ((MediaQuery.of(context).size.width - 3) / 4) / MyState.height * 8 + 4,
+                    width: double.infinity,
+                    child: Obx(() => GridView.builder(
+                          gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 0.5,
+                            crossAxisSpacing: 0.5,
+                            childAspectRatio: MyState.height,
+                          ),
+                          itemCount: controller.state.totalValue.length,
+                          itemBuilder: (context, index) => Container(
+                            alignment: Alignment.center,
+                            color: controller.state.bgColor,
+                            child: ColoredBox(
+                                color: Colors.transparent,
+                                child: Text(controller.state.totalValue[index],
+                                    textAlign: TextAlign.center, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: controller.state.textColor))),
+                          ),
+                        )),
+                  ),
+                ),*/
+                Obx(() => Table(
+                      border: TableBorder(
+                        //在右上下的边框线
+                        // top: BorderSide(color: Colors.red),
+                        // left: BorderSide(color: Colors.red),
+                        // right: BorderSide(color: Colors.red),
+                        // bottom: BorderSide(color: Colors.red),
+                        //水平线
+                        horizontalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                        //垂直线
+                        verticalInside: BorderSide(color: controller.state.lineColor, width: 0.5),
+                      ),
+                      //单元格的宽， map哪列 ：宽度
+                      columnWidths: const {
+                        1: FlexColumnWidth(1),
+                        0: IntrinsicColumnWidth(), //包裹内容
+                        3: IntrinsicColumnWidth(),
+                        2: FlexColumnWidth(1),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle, //垂直的位置
+                      children: List.generate(
+                          8,
+                          (i) => TableRow(
+                              decoration: BoxDecoration(color: controller.state.bgColor),
+                              children: List.generate(
+                                  4,
+                                  (index) => GestureDetector(
+                                        onTap: () {
+                                          if (index == 2) controller.juBuPingHeng(0);
+                                        },
+                                        child: Center(
                                           child: Text(
                                               style: TextStyle(
                                                   height: 1.1,
@@ -134,9 +134,10 @@ class MyHomePage extends GetView<MyHomeLogic> {
                                                       ? Colors.purpleAccent
                                                       : controller.state.textColor),
                                               controller.state.totalValue[i * 4 + index]),
-                                        )).toList())).toList(),
-                      ),
+                                        ),
+                                      )).toList())).toList(),
                     )),
+                //按钮功能区
                 SizedBox(
                   height: 35,
                   child: Row(
@@ -464,6 +465,16 @@ class MyHomePage extends GetView<MyHomeLogic> {
           height: 32,
           child: TextButton(
             style: buildButtonStyle(bg),
+            onLongPress: () {
+              switch (i) {
+                case 1:
+                  controller.showBottomFunction();
+                  break;
+                case 2:
+                  controller.lockScreen();
+                  break;
+              }
+            },
             onPressed: () {
               switch (i) {
                 case 1: //闲赢
