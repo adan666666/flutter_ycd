@@ -394,9 +394,17 @@ class MyHomeLogic extends GetxController {
 
   void deleteLast() {
     if (state.table2List.isNotEmpty) {
-      _instance?.then((db) => db.delete(DbHelper.table2, where: 'table2Id =?', whereArgs: [state.table2List.last.table2Id]).then((value) => queryAll()));
-      state.js1 = state.js1 - 1;
-      state.totalValue[28] = "${state.js1}/${state.js2}";
+      Get.defaultDialog(
+        barrierDismissible: false,
+        title: '警告',
+        content: const Text('确定删除最后一行数据？'),
+        onCancel: () {},
+        onConfirm: () {
+          _instance?.then((db) => db.delete(DbHelper.table2, where: 'table2Id =?', whereArgs: [state.table2List.last.table2Id]).then((value) => queryAll()));
+          state.js1 = state.js1 - 1;
+          state.totalValue[28] = "${state.js1}/${state.js2}";
+        },
+      );
     }
   }
 
