@@ -521,6 +521,7 @@ class MyHomeLogic extends GetxController {
   }
 
   void updateSqlite(int index) {
+    //1
     // _instance?.then((db) => db.update(DbHelper.table2, state.table2List[index].toJson()..update("colmun_shuyingzhi_d", (value) => "") /*具体更新的数据*/,
     //     where: "table2Id =?", //通过id查找需要更新的数据
     //     whereArgs: [index])).then((value) => _queryAllTable2());
